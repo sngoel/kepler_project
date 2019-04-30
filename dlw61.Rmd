@@ -170,11 +170,85 @@ drinks_expanded <- subset(drinks_expanded,!Caffeine %in% c('Varies','varies','')
 drinks_expanded$Caffeine <- as.numeric(as.character(drinks_expanded$Caffeine))
 ```
 
+#### Distribution of the variables in each of the datasets
+Drinks expanded dataset
+```{r ggplot, fig.width=14, fig.height=8, warning=FALSE, message=FALSE, echo=FALSE}
+drinks_expanded %>% 
+    select(-contains("Beverage")) %>% 
+    mutate(dummy=1) %>% 
+    melt(id='dummy') %>%
+    mutate(value=as.numeric(value)) %>% 
+    ggplot(aes(value)) + 
+    geom_histogram(color='white',fill='red') + 
+    facet_wrap(~variable,scales='free',ncol=5) + 
+    theme_bw() +
+    labs(x='Value',y='Frequency',title='Drinks Expanded Variables Histograms')+
+    theme(
+        legend.text=element_text(size=11),
+        legend.position="top",
+        legend.title = element_blank(),
+        axis.text.x=element_text(size=12),
+        axis.text.y=element_text(size=12),
+        axis.title.x=element_text(size=12),
+        axis.title.y=element_text(size=12),
+        strip.text.y = element_text(size=12),
+        strip.text.x = element_text(size=12),
+        plot.title=element_text(size=15))
+```
 
+###Food dataset
+```{r fig.width=14, fig.height=4, warning=FALSE, message=FALSE, echo=FALSE}
+food %>% 
+    select(-contains("Food")) %>% 
+    mutate(dummy=1) %>% 
+    melt(id='dummy') %>%
+    mutate(value=as.numeric(value)) %>% 
+    ggplot(aes(value)) + 
+    geom_histogram(color='white',fill='red') + 
+    facet_wrap(~variable,scales='free',ncol=5) + 
+    theme_bw() +
+    labs(x='Value',y='Frequency',title='Food Variables Histograms')+
+    theme(
+        legend.text=element_text(size=11),
+        legend.position="top",
+        legend.title = element_blank(),
+        axis.text.x=element_text(size=12),
+        axis.text.y=element_text(size=12),
+        axis.title.x=element_text(size=12),
+        axis.title.y=element_text(size=12),
+        strip.text.y = element_text(size=12),
+        strip.text.x = element_text(size=12),
+        plot.title=element_text(size=15))
+```
 
+### Supervised learning
+Fit linear model to predict number of Calories in a drink based on other variables such as
+Total_Fat, Trans_Fat. Sugars etc.
+5 folds cross validation Used and will use `MAPE` (mean average error percentage) as the perforamce metrics. Once we have the `MAPE` for each fold, I will simply take the average of all folds and this will be the final `MAPE` 
+```{r warning=FALSE, message=FALSE}
+# randomly shuffle the data, set seed to produce the same resultss
+# in addition, remove the first 3 columns which contains the Beverage descriptions
+set.seed(380)
+drinks_expanded <- drinks_expanded[sample(nrow(drinks_expanded)),] %>% select(-contains("Beverage"))
 
+# create 5 equally size folds
+K <- 5
+folds <- cut(seq(1,nrow(drinks_expanded)),breaks=K,labels=FALSE)
 
+# Perform 5 folds cross validation
+MAPE <- c()
+for(i in 1:K){
+    index <- which(folds==i,arr.ind=TRUE)
+    train <- drinks_expanded[-index, ]
+    test <- drinks_expanded[index, ]
+    model <- lm(Calories ~., data=train)
+    prediction <- predict(model,test)
+    MAPE[i] <- abs(test$Calories/prediction - 1)
+}
 
+paste0('MAPE for 5 folds: ', round(mean(MAPE)*100,2),'%')
+
+```
 
 
 
