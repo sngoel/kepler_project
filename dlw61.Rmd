@@ -96,3 +96,30 @@ plot(Calories~Total_Fat,
      data = drinks_expanded)
 abline(h=500,col='red')
 ```
+
+### Plot Strar Bucks Drink (Sugars and Total Fat)
+```{r}
+# red line shows MAX recomended meal amount of sugar for food
+
+# http://sugarscience.ucsf.edu/the-growing-concern-of-overconsumption.html
+
+plot(Sugars~Total_Fat, 
+     xlab = 'Fat in Starbucks Drinks', 
+     ylab = 'Total Sugar in Starbucks Food',
+     main = 'Total Fat Vs Sugar for Starbucks Drinks', 
+     data = drinks_expanded)
+abline(h=38,col='red')
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
