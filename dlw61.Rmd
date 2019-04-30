@@ -250,8 +250,86 @@ paste0('MAPE for 5 folds: ', round(mean(MAPE)*100,2),'%')
 
 ```
 
+### Unspurviesd learning
+for the unspurviesd part, I will use the food dataset.
+We will use "Hierarchical Clustering" in order to find clusters of similiar foods based on
+`Calories`, `Fat`, `Carb`, `Fiver` and `Protein`
+```{r fig.width=24, fig.height=15, warning=FALSE, message=FALSE}
+# remove the food column 
+df <- food %>% select(-Food.name)
+# set food column as the row names
+rownames(df) <- food$Food.name
 
+# scale the data and create distance metrics using euclidean distance.
+dd <- dist(scale(df), method = "euclidean")
 
+# fit hierarchical clustering using "ward.D2" method
+hc <- hclust(dd, method = "ward.D2")
 
+# plot the results
+par(cex=1, mar=c(2, 2, 4, 1))
+plot(hc, hang = -1, cex = 1.4, xlab = "", sub="", 
+     axes=FALSE, ylab = '', main='Food HierarChial Cluster Diagram',cex.main=2)
+```
+
+### Simulation
+```{r}
+# https://www.accessdata.fda.gov/scripts/interactivenutritionfactslabel/carbohydrate.html
+
+set.seed(380)
+starbucks_order<-function(food_size=1, drink_size=1){
+  food_samp<-sample(food ,food_size, replace=TRUE)
+  drink_samp<-sample(drinks_expanded, drink_size, replace=TRUE)
+  
+  total_sugar<-sum(drink_samp$Sugars)
+  total_caffine<-sum(drink_samp$Caffeine)
+  total_calories<-sum(food_samp$Calories)+sum(drink_samp$Calories)
+  total_fat<-sum(food_samp$Fat)+sum(drink_samp$Total_Fat)
+  total_carbo<-sum(food_samp$Carb)+sum(drink_samp$Total_Carbohydrates)
+  
+  # index 1 sugar
+  # index 2 calories
+  # index 3 fat
+  # index 4 carbo
+  # index 5 caffine
+  return(c(total_sugar, total_calories, total_fat, total_carbo, total_caffine))
+}
+
+food_orders<-3
+drink_orders<-3
+n<-365
+final_sim<- do(n)*starbucks_order(food_orders,drink_orders)
+head(final_sim)
+
+hist(final_sim[,1],
+     breaks=30,
+     xlab='Graph of Simulated Daily Sugar Intake at Starbucks',
+     main='Daily Sugar Amount (g)')
+abline(v=38,col='red')
+
+hist(final_sim[,2],
+     breaks=30,
+     xlab='Graph of Simulated Daily Calories Intake at Starbucks',
+     main='Daily Calories Amount')
+
+hist(final_sim[,3],
+     breaks=30,
+     xlab='Graph of Simulated Daily Fat Intake at Starbucks',
+     main='Daily Fat Amount (g)')
+abline(v=65,col='red')
+
+hist(final_sim[,4],
+     breaks=30,
+     xlab='Graph of Simulated Daily Carbohydrates Intake at Starbucks',
+     main='Daily Carbohydrates Amount (g)')
+abline(v=300,col='red')
+
+hist(final_sim[,5],
+     breaks=30,
+     xlab='Graph of Simulated Daily Caffine Intake at Starbucks',
+     main='Daily Caffine Amount (mg)')
+abline(v=400,col='red')
+
+```
 
 
