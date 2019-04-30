@@ -16,7 +16,6 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(caret)
-library(ggplot2)
 library(readr)
 library(tidyverse)
 library(ggthemes)
@@ -377,8 +376,6 @@ conf_data <- rbind(predictions, real)
 identical(levels(conf_data[conf_data$type == "prediction", 1]) , levels(conf_data[conf_data$type == "real", 1]))
 
 confusionMatrix(conf_data[conf_data$type == "prediction", 1], conf_data[conf_data$type == "real",1], dnn = c("Prediction", "Reference"))
-
-rm('predictions', 'real', 'conf_data', 'split')
 ```
 
 ```{r}
