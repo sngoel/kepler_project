@@ -16,26 +16,26 @@ output: html_notebook
 
 *Description: Report includes meaningful contributions from (at least) two different data sources that are JOINED for the analysis*
 
-(A) .Rmd Line number(s) for join operation: 178
+(A) .Rmd Line number(s) for join operation: 223
 
 
 
 ### Data Wrangling (5 of 6 required)
 *Description: Clear demonstration of proficiency should include proper use of 5 out of the following 6 topics from class: (+) general purpose data wrangling--e.g., filter, select mutate, summarise, arrange, group_by, etc. (+) spread & gather to stack/unstack variables (+) regular expressions (+) user-defined functions (+) loops and control flow (+) vectorized functions like the `apply` family, `purrr::map` or `dplyr::do`*
 
-(A) .Rmd Line number(s) for an example of general purpose data wrangling: 50 - 171
+(A) .Rmd Line number(s) for an example of general purpose data wrangling: 54 - 216
 
 
-(B) .Rmd Line number(s) for a spread & gather (or equivalent): 649
+(B) .Rmd Line number(s) for a spread & gather (or equivalent): 721
 
 
-(C) .Rmd Line number(s) for use of regular expressions: 61 - 64, 68 - 69, 134 - 136
+(C) .Rmd Line number(s) for use of regular expressions: 64 - 72, 149 - 154
 
 
-(D) .Rmd Line number(s) for use of user-defined functions: 34 - 47, 769 - 785
+(D) .Rmd Line number(s) for use of user-defined functions: 36 - 49, 848 - 864
 
 
-(E) .Rmd Line number(s) for use of loops and/or control flow: 731 - 738
+(E) .Rmd Line number(s) for use of loops and/or control flow: 811 - 818
 
 
 (F) .Rmd Line number(s) for use of vectorized functions: NA
@@ -45,16 +45,16 @@ output: html_notebook
 
 *Description: Clear demonstration of proficiency should include at least FOUR distinct and useful data visualizations that are relevant to purpose of the analysis. Include at least one effective visualization with layered data from distinct data structures--e.g., a `geom` that plots data from a secondary data frame AND another must effectively display many--3 or more--variables. All plots must demonstrate good plotting practices.*
 
-(A) .Rmd Line number(s) for visualization with layered data from distinct data structures--e.g., a `geom` that plots data from a secondary data frame: 210 - 217, 327 - 333, 443 - 449
+(A) .Rmd Line number(s) for visualization with layered data from distinct data structures--e.g., a `geom` that plots data from a secondary data frame: 253 - 262, 380 - 389, 506 - 515
 
 
-(B) .Rmd Line number(s) for visualization displaying many--3 or more--variables (A, B, C, & D must be four **different** plots): 673 - 695, 698 - 721
+(B) .Rmd Line number(s) for visualization displaying many--3 or more--variables (A, B, C, & D must be four **different** plots): 742 - 765, 768 - 792
 
 
-(C) .Rmd Line number(s) for a third visualization: 220 - 272, 404 - 414 
+(C) .Rmd Line number(s) for a third visualization: 264 - 318, 335 - 345
 
 
-(D) .Rmd Line number(s) for a third visualization: 594 - 621
+(D) .Rmd Line number(s) for a third visualization: 665 - 692
 
 
 
@@ -63,16 +63,16 @@ output: html_notebook
 
 *Description: Clear demonstration of proficiency should include proper use of 3 out of the following 4 topics from class: (+) statistical modeling/supervised learning (+) unsupervised learning (+) user-defined simulations (+) analysis of text data (+) R tools for "big data"*
 
-(A) .Rmd Line number(s) for statistical modeling/supervised learning:  283 - 303, 726 - 747
+(A) .Rmd Line number(s) for statistical modeling/supervised learning:  329 - 351, 797 - 820
 
 
-(B) .Rmd Line number(s) for unsupervised learning: 306 - 318, 753 - 769
+(B) .Rmd Line number(s) for unsupervised learning: 354 - 372, 826 - 843
 
 
-(C) .Rmd Line number(s) for user-defined simulation(s): 772 - 827
+(C) .Rmd Line number(s) for user-defined simulation(s): 846 - 899
 
 
-(D) .Rmd Line number(s) for analysis of text data: 183 - 201
+(D) .Rmd Line number(s) for analysis of text data: 226 - 244
 
 
 (E) .Rmd Line number(s) for R tools for "big data": NA

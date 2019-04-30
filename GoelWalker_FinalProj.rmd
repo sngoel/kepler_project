@@ -626,7 +626,7 @@ confusionMatrix(conf_data[conf_data$type == "prediction", 1],
 rm('predictions', 'real', 'conf_data', 'split', 'test', 'train')
 ```
 
-### Plot StarBucks Food (Calories and Fat)
+### Plot Starbucks Food (Calories and Fat)
 ```{r}
 # Red line shows recomended meal amount of Calories for food
 # Blue line shows MAX recomended daily amount of Fat for Food
@@ -636,8 +636,8 @@ rm('predictions', 'real', 'conf_data', 'split', 'test', 'train')
 
 plot(Calories~Total_Fat, 
      ylab = 'Calories in Starbucks Food', 
-     xlab = 'Fat Food in Starbucks Food',
-     main = 'Caleries vs Fat for Starbucks Food', 
+     xlab = 'Total Fat in Starbucks Food',
+     main = 'Caleries vs Total Fat for Starbucks Food', 
      data = sbux_f)
 abline(v = 22, col = 'blue')
 abline(h = 500, col = 'red')
@@ -662,7 +662,7 @@ sbux_f %>%
 # Roasted Turkey & Dill Havarti Sandwich
 ```
 
-### Plot StarBucks Drink (Calories and Total Fat)
+### Plot Starbucks Drink (Calories and Total Fat)
 ```{r}
 # Red line shows recomended meal amount of Calories for food
 
@@ -670,14 +670,14 @@ sbux_f %>%
 
 plot(Calories~Total_Fat, 
      ylab = 'Calories in Starbucks Drinks', 
-     xlab = 'Total Food in Starbucks Food',
+     xlab = 'Total Fat in Starbucks Food',
      main = 'Caleries vs Total Fat for Starbucks Drinks', 
      data = drinks_expanded)
 abline(h = 500, col = 'red')
 ```
 
 
-### Plot StarBucks Drink (Sugars and Total Fat)
+### Plot Starbucks Drink (Sugars and Total Fat)
 ```{r}
 # Red line shows MAX recomended meal amount of sugar for food
 
@@ -691,7 +691,7 @@ plot(Sugars~Total_Fat,
 abline(h = 38, col = 'red')
 ```
 
-### Plot StarBucks Drink (Sugars and Caffine)
+### Plot Starbucks Drink (Sugars and Caffine)
 ```{r, warning=FALSE, message=FALSE}
 # Blue line Max recomendation of sugar
 # Red line Max recomendation of caffine
@@ -725,7 +725,7 @@ sudo_sugar <- sudo %>%
   select(Beverage_category, Sugars) %>%
   filter(Sugars >= 38) 
 
-# 37.60331% of drinks have higher than rated sugar
+# % of drinks have higher than rated sugar
 length(sudo_sugar[, 1]) / length(drinks_expanded$Beverage_category)
 
 # Worst drinks ordered by violation of sugar contents
@@ -739,7 +739,6 @@ It doesnt seems the data contains any missing values. However, Caffeine variable
 
 #### Distribution of the variables in each of the datasets
 Drinks expanded dataset
-
 ```{r ggplot, fig.width=14, fig.height=8, warning=FALSE, message=FALSE}
 drinks_expanded %>% 
     select(-contains("Beverage")) %>% 
@@ -840,7 +839,7 @@ hc <- hclust(dd, method = "ward.D2")
 par(cex = 1, mar = c(2, 2, 4, 1))
 plot(hc, hang = -1, cex = 1.4, xlab = "", sub="", 
      axes=FALSE, ylab = '', 
-     main='Food HierarChial Cluster Diagram', cex.main = 2)
+     main='Food Hierarchical Cluster Diagram', cex.main = 2)
 ```
 
 ### Simulation
@@ -859,7 +858,7 @@ starbucks_order <- function(food_size = 1, drink_size = 1){
   # Index 2 Calories
   # Index 3 Fat
   # Index 4 Carbohydrates
-  # Index 5 Caffine
+  # Index 5 Caffeine
   return(c(total_sugar, total_calories, total_fat, total_carbo, total_caffine))
 }
 
@@ -873,7 +872,7 @@ hist(final_sim[, 1],
      breaks = 30,
      xlab = 'Graph of Simulated Daily Sugar Intake at Starbucks',
      main = 'Daily Sugar Amount (g)')
-abline(v = 38,col = 'red')
+abline(v = 38, col = 'red')
 
 hist(final_sim[, 2],
      breaks = 30,
@@ -884,17 +883,17 @@ hist(final_sim[, 3],
      breaks = 30,
      xlab = 'Graph of Simulated Daily Fat Intake at Starbucks',
      main = 'Daily Fat Amount (g)')
-abline(v = 65,col = 'red')
+abline(v = 65, col = 'red')
 
 hist(final_sim[, 4],
      breaks = 30,
      xlab = 'Graph of Simulated Daily Carbohydrates Intake at Starbucks',
      main = 'Daily Carbohydrates Amount (g)')
-abline(v = 300,col = 'red')
+abline(v = 300, col = 'red')
 
 hist(final_sim[, 5],
      breaks = 30,
-     xlab = 'Graph of Simulated Daily Caffine Intake at Starbucks',
-     main = 'Daily Caffine Amount (mg)')
-abline(v = 400,col = 'red')
+     xlab = 'Graph of Simulated Daily Caffeine Intake at Starbucks',
+     main = 'Daily Caffeine Amount (mg)')
+abline(v = 400, col = 'red')
 ```
