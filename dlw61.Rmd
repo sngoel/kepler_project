@@ -12,9 +12,9 @@ rm (list = ls ())
 
 # load all packages here
 library (mdsr)
-library(dplyr) # for data manipluation
-library(ggplot2) # data visualization
-library(reshape2) # reshaping 
+library (dplyr) # for data manipluation
+library (ggplot2) # data visualization
+library (reshape2) # reshaping 
 
 # user-defined functions here (if any)
 
@@ -28,19 +28,19 @@ drinks_expanded <- read.csv('starbucks_drinkMenu_expanded.csv')
 food <- read.csv('starbucks-menu-nutrition-food.csv')
 
 # as the data seems to contains some trademarks and accent, we will first remove them
-drinks_expanded$Beverage_category <- iconv(drinks_expanded$Beverage_category, "latin1", "ASCII", sub = "byte")
-drinks_expanded$Beverage <- iconv(drinks_expanded$Beverage, "latin1", "ASCII", sub = "byte")
-drinks_expanded$Beverage_prep <- iconv(drinks_expanded$Beverage_prep, "latin1", "ASCII", sub = "byte")
+drinks_expanded$Beverage_category <- iconv (drinks_expanded$Beverage_category, "latin1", "ASCII", sub = "byte")
+drinks_expanded$Beverage <- iconv (drinks_expanded$Beverage, "latin1", "ASCII", sub = "byte")
+drinks_expanded$Beverage_prep <- iconv (drinks_expanded$Beverage_prep, "latin1", "ASCII", sub = "byte")
 
-drinks_expanded$Beverage_category <- gsub('(<[a-z0-9]+>)','',drinks_expanded$Beverage_category)
-drinks_expanded$Beverage <- gsub('(<[a-z0-9]+>)','',drinks_expanded$Beverage)
-drinks_expanded$Beverage_prep <- gsub('(<[a-z0-9]+>)','',drinks_expanded$Beverage_prep)
+drinks_expanded$Beverage_category <- gsub ('(<[a-z0-9]+>)','',drinks_expanded$Beverage_category)
+drinks_expanded$Beverage <- gsub ('(<[a-z0-9]+>)','',drinks_expanded$Beverage)
+drinks_expanded$Beverage_prep <- gsub ('(<[a-z0-9]+>)','',drinks_expanded$Beverage_prep)
 ```
 
 ### Quick view of Data
 ```{r}
-head(food)
-head(drinks_expanded)
+head (food)
+head (drinks_expanded)
 ```
 
 ### Plot Strar Bucks Food (Calories and Fat)
@@ -51,29 +51,30 @@ head(drinks_expanded)
 # https://www.uccs.edu/healthcircle/sites/healthcircle/files/inline-files/Meal%20Planning.pdf
 # https://my.clevelandclinic.org/health/articles/11208-fat-what-you-need-to-know
 
-plot(Calories~Fat, 
+plot (Calories~Fat, 
      ylab = 'Calories in Starbucks Food', 
      xlab = 'Fat in Starbucks Food',
      main = 'Caleries vs Fat for Starbucks Food', 
      data = food)
-abline(v=22,col='blue')
-abline(h=500,col='red')
+abline (v=22, col='blue')
+abline (h=500, col='red')
 
 food %>%
-  select(Food.name,Calories,Fat) %>%
-  filter(Calories>=500,Fat>=22) %>% 
-  count(Food.name) %>% 
-  ungroup() %>% 
-  arrange(desc(n))
+  select (Food.name,Calories,Fat) %>%
+  filter (Calories>=500,Fat>=22) %>% 
+  count (Food.name) %>% 
+  ungroup () %>% 
+  arrange (desc (n))
 
 # Unhealthiest Option
 food %>%
-  select(Food.name,Calories,Fat) %>%
-  filter(Calories>=600,Fat>=28) %>% 
-  count(Food.name) %>% 
-  ungroup() %>% 
-  arrange(desc(n))
-if(FALSE){
+  select (Food.name, Calories, Fat) %>%
+  filter (Calories>=600, Fat>=28) %>% 
+  count (Food.name) %>% 
+  ungroup () %>% 
+  arrange (desc (n))
+
+if (FALSE){
 "
 Green Goddess Avocado Salad			
 Lentils & Vegetable Protein Bowl with Brown Rice		
@@ -89,12 +90,12 @@ Roasted Turkey & Dill Havarti Sandwich
 # https://www.uccs.edu/healthcircle/sites/healthcircle/files/inline-files/Meal%20Planning.pdf
 # https://my.clevelandclinic.org/health/articles/11208-fat-what-you-need-to-know
 
-plot(Calories~Total_Fat, 
+plot (Calories~Total_Fat, 
      ylab = 'Calories in Starbucks Drinks', 
      xlab = 'Total Fat in Starbucks Food',
      main = 'Caleries vs Total Fat for Starbucks Drinks', 
      data = drinks_expanded)
-abline(h=500,col='red')
+abline (h = 500, col = 'red')
 ```
 
 ### Plot Strar Bucks Drink (Sugars and Total Fat)
@@ -103,12 +104,12 @@ abline(h=500,col='red')
 
 # http://sugarscience.ucsf.edu/the-growing-concern-of-overconsumption.html
 
-plot(Sugars~Total_Fat, 
+plot (Sugars ~ Total_Fat, 
      xlab = 'Fat in Starbucks Drinks', 
      ylab = 'Total Sugar in Starbucks Food',
      main = 'Total Fat Vs Sugar for Starbucks Drinks', 
      data = drinks_expanded)
-abline(h=38,col='red')
+abline (h = 38, col = 'red')
 ```
 
 ### Plot Strar Bucks Drink (Sugars and Caffine)
@@ -118,38 +119,38 @@ abline(h=38,col='red')
 
 # https://www.fda.gov/consumers/consumer-updates/spilling-beans-how-much-caffeine-too-much
 
-sudo<-drinks_expanded %>%
-  mutate(clean_caff=as.numeric(as.character(drinks_expanded$Caffeine)))
-sudo[is.na(sudo)]<-0
+sudo <- drinks_expanded %>%
+  mutate (clean_caff = as.numeric (as.character (drinks_expanded$Caffeine)))
+sudo[is.na (sudo)] <- 0
 
-plot(clean_caff~Sugars, 
+plot (clean_caff~Sugars, 
      ylab = 'Caffeine in Starbucks Drinks', 
      xlab = 'Sugar in Starbucks Food',
      main = 'Total Fat Vs Sugar for Starbucks Drinks', 
      data = sudo)
-abline(h=400,col='red')
-abline(v=38,col='blue')
+abline (h=400, col='red')
+abline (v=38, col='blue')
 
-#Venti Coffee
+# Venti Coffee
 sudo %>%
-  select(Beverage_category,clean_caff) %>%
-  filter(clean_caff>=400)
+  select (Beverage_category, clean_caff) %>%
+  filter (clean_caff >= 400)
 
 sudo %>%
-  select(Beverage_category,Sugars) %>%
-  filter(Sugars>=38) %>% 
-  count(Beverage_category) %>% 
-  ungroup() %>% 
-  arrange(desc(n))
+  select (Beverage_category, Sugars) %>%
+  filter (Sugars >= 38) %>% 
+  count (Beverage_category) %>% 
+  ungroup () %>% 
+  arrange (desc (n))
 
-sudo_sugar<-sudo %>%
-  select(Beverage_category,Sugars) %>%
-  filter(Sugars>=38) 
+sudo_sugar <- sudo %>%
+  select (Beverage_category, Sugars) %>%
+  filter (Sugars >= 38) 
 
 # 37.60331% of drinks have higher than rated sugar
-length(sudo_sugar[,1])/length(drinks_expanded$Beverage_category)
+length (sudo_sugar[,1]) / length (drinks_expanded$Beverage_category)
 
-if(FALSE){
+if (FALSE){
 "
 Worst drinks ordered by violation of sugar contents
 Frappuccino Blended Coffee				
@@ -164,58 +165,58 @@ Tazo Tea Drinks
 It doesnt seems the data contains any missing values. However, Caffeine variable in the `Drinks Expanded` dataset seems to be a mixed of numeric and character. As it can be seen, there are values with value `varies` or `Varies` in the data. Removed them from the dataset and will format it into numeric variable.
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
-summary(drinks_expanded)
-summary(food)
-drinks_expanded <- subset(drinks_expanded,!Caffeine %in% c('Varies','varies',''))
-drinks_expanded$Caffeine <- as.numeric(as.character(drinks_expanded$Caffeine))
+summary (drinks_expanded)
+summary (food)
+drinks_expanded <- subset (drinks_expanded, !Caffeine %in% c ('Varies', 'varies', ''))
+drinks_expanded$Caffeine <- as.numeric (as.character (drinks_expanded$Caffeine))
 ```
 
 #### Distribution of the variables in each of the datasets
 Drinks expanded dataset
 ```{r ggplot, fig.width=14, fig.height=8, warning=FALSE, message=FALSE, echo=FALSE}
 drinks_expanded %>% 
-    select(-contains("Beverage")) %>% 
-    mutate(dummy=1) %>% 
-    melt(id='dummy') %>%
-    mutate(value=as.numeric(value)) %>% 
-    ggplot(aes(value)) + 
-    geom_histogram(color='white',fill='red') + 
-    facet_wrap(~variable,scales='free',ncol=5) + 
-    theme_bw() +
-    labs(x='Value',y='Frequency',title='Drinks Expanded Variables Histograms')+
+    select (-contains ("Beverage")) %>% 
+    mutate (dummy = 1) %>% 
+    melt (id = 'dummy') %>%
+    mutate (value=as.numeric (value)) %>% 
+    ggplot (aes (value)) + 
+    geom_histogram (color = 'white', fill = 'red') + 
+    facet_wrap (~variable, scales = 'free', ncol = 5) + 
+    theme_bw () +
+    labs (x = 'Value',y = 'Frequency',title = 'Drinks Expanded Variables Histograms')+
     theme(
-        legend.text=element_text(size=11),
-        legend.position="top",
+        legend.text = element_text(size=11),
+        legend.position = "top",
         legend.title = element_blank(),
-        axis.text.x=element_text(size=12),
-        axis.text.y=element_text(size=12),
-        axis.title.x=element_text(size=12),
-        axis.title.y=element_text(size=12),
+        axis.text.x = element_text(size=12),
+        axis.text.y = element_text(size=12),
+        axis.title.x = element_text(size=12),
+        axis.title.y = element_text(size=12),
         strip.text.y = element_text(size=12),
         strip.text.x = element_text(size=12),
-        plot.title=element_text(size=15))
+        plot.title = element_text(size=15))
 ```
 
 ###Food dataset
 ```{r fig.width=14, fig.height=4, warning=FALSE, message=FALSE, echo=FALSE}
 food %>% 
-    select(-contains("Food")) %>% 
-    mutate(dummy=1) %>% 
-    melt(id='dummy') %>%
-    mutate(value=as.numeric(value)) %>% 
-    ggplot(aes(value)) + 
-    geom_histogram(color='white',fill='red') + 
-    facet_wrap(~variable,scales='free',ncol=5) + 
-    theme_bw() +
-    labs(x='Value',y='Frequency',title='Food Variables Histograms')+
+    select (-contains("Food")) %>% 
+    mutate (dummy=1) %>% 
+    melt (id='dummy') %>%
+    mutate (value = as.numeric(value)) %>% 
+    ggplot (aes (value)) + 
+    geom_histogram (color = 'white', fill = 'red') + 
+    facet_wrap (~variable, scales = 'free', ncol = 5) + 
+    theme_bw () +
+    labs(x = 'Value', y = 'Frequency',title = 'Food Variables Histograms')+
     theme(
-        legend.text=element_text(size=11),
-        legend.position="top",
+        legend.text = element_text(size=11),
+        legend.position = "top",
         legend.title = element_blank(),
-        axis.text.x=element_text(size=12),
-        axis.text.y=element_text(size=12),
-        axis.title.x=element_text(size=12),
-        axis.title.y=element_text(size=12),
+        axis.text.x = element_text(size=12),
+        axis.text.y = element_text(size=12),
+        axis.title.x = element_text(size=12),
+        axis.title.y = element_text(size=12),
         strip.text.y = element_text(size=12),
         strip.text.x = element_text(size=12),
         plot.title=element_text(size=15))
@@ -228,25 +229,26 @@ Total_Fat, Trans_Fat. Sugars etc.
 ```{r warning=FALSE, message=FALSE}
 # randomly shuffle the data, set seed to produce the same resultss
 # in addition, remove the first 3 columns which contains the Beverage descriptions
-set.seed(380)
-drinks_expanded <- drinks_expanded[sample(nrow(drinks_expanded)),] %>% select(-contains("Beverage"))
+set.seed (380)
+drinks_expanded <- drinks_expanded[sample(nrow(drinks_expanded)),] %>% 
+  select (-contains("Beverage"))
 
 # create 5 equally size folds
 K <- 5
-folds <- cut(seq(1,nrow(drinks_expanded)),breaks=K,labels=FALSE)
+folds <- cut (seq (1, nrow (drinks_expanded)), breaks = K, labels = FALSE)
 
 # Perform 5 folds cross validation
-MAPE <- c()
-for(i in 1:K){
-    index <- which(folds==i,arr.ind=TRUE)
+MAPE <- c ()
+for (i in 1:K){
+    index <- which (folds==i, arr.ind=TRUE)
     train <- drinks_expanded[-index, ]
     test <- drinks_expanded[index, ]
-    model <- lm(Calories ~., data=train)
-    prediction <- predict(model,test)
-    MAPE[i] <- abs(test$Calories/prediction - 1)
+    model <- lm (Calories ~., data=train)
+    prediction <- predict (model,test)
+    MAPE[i] <- abs (test$Calories / prediction - 1)
 }
 
-paste0('MAPE for 5 folds: ', round(mean(MAPE)*100,2),'%')
+paste0 ('MAPE for 5 folds: ', round (mean (MAPE)*100, 2),'%')
 
 ```
 
@@ -256,79 +258,87 @@ We will use "Hierarchical Clustering" in order to find clusters of similiar food
 `Calories`, `Fat`, `Carb`, `Fiver` and `Protein`
 ```{r fig.width=24, fig.height=15, warning=FALSE, message=FALSE}
 # remove the food column 
-df <- food %>% select(-Food.name)
+df <- food %>% 
+  select (-Food.name)
 # set food column as the row names
-rownames(df) <- food$Food.name
+rownames (df) <- food$Food.name
 
 # scale the data and create distance metrics using euclidean distance.
-dd <- dist(scale(df), method = "euclidean")
+dd <- dist (scale (df), method = "euclidean")
 
 # fit hierarchical clustering using "ward.D2" method
-hc <- hclust(dd, method = "ward.D2")
+hc <- hclust (dd, method = "ward.D2")
 
 # plot the results
-par(cex=1, mar=c(2, 2, 4, 1))
-plot(hc, hang = -1, cex = 1.4, xlab = "", sub="", 
-     axes=FALSE, ylab = '', main='Food HierarChial Cluster Diagram',cex.main=2)
+par (cex = 1, mar = c (2, 2, 4, 1))
+plot (hc, 
+     hang = -1, 
+     cex = 1.4, 
+     xlab = "", 
+     sub = "", 
+     axes = FALSE, 
+     ylab = '', 
+     main = 'Food HierarChial Cluster Diagram',
+     cex.main = 2)
 ```
 
 ### Simulation
 ```{r}
 # https://www.accessdata.fda.gov/scripts/interactivenutritionfactslabel/carbohydrate.html
 
-set.seed(380)
-starbucks_order<-function(food_size=1, drink_size=1){
-  food_samp<-sample(food ,food_size, replace=TRUE)
-  drink_samp<-sample(drinks_expanded, drink_size, replace=TRUE)
+set.seed (380)
+starbucks_order <- function (food_size = 1, drink_size = 1){
+  food_samp <- sample (food ,food_size, replace=TRUE)
+  drink_samp <- sample (drinks_expanded, drink_size, replace=TRUE)
   
-  total_sugar<-sum(drink_samp$Sugars)
-  total_caffine<-sum(drink_samp$Caffeine)
-  total_calories<-sum(food_samp$Calories)+sum(drink_samp$Calories)
-  total_fat<-sum(food_samp$Fat)+sum(drink_samp$Total_Fat)
-  total_carbo<-sum(food_samp$Carb)+sum(drink_samp$Total_Carbohydrates)
+  total_sugar <- sum (drink_samp$Sugars)
+  total_caffine <- sum (drink_samp$Caffeine)
+  total_calories <- sum (food_samp$Calories) + sum (drink_samp$Calories)
+  total_fat <- sum (food_samp$Fat) + sum (drink_samp$Total_Fat)
+  total_carbo <- sum (food_samp$Carb) + sum (drink_samp$Total_Carbohydrates)
   
   # index 1 sugar
   # index 2 calories
   # index 3 fat
   # index 4 carbo
   # index 5 caffine
-  return(c(total_sugar, total_calories, total_fat, total_carbo, total_caffine))
+  return (c (total_sugar, total_calories, total_fat, total_carbo, total_caffine))
 }
 
-food_orders<-3
-drink_orders<-3
-n<-365
-final_sim<- do(n)*starbucks_order(food_orders,drink_orders)
-head(final_sim)
+food_orders <- 3
+drink_orders <- 3
+n <- 365
+final_sim <- do (n) * starbucks_order (food_orders,drink_orders)
+head (final_sim)
 
-hist(final_sim[,1],
-     breaks=30,
-     xlab='Graph of Simulated Daily Sugar Intake at Starbucks',
-     main='Daily Sugar Amount (g)')
-abline(v=38,col='red')
+hist (final_sim[,1],
+     breaks = 30,
+     xlab = 'Graph of Simulated Daily Sugar Intake at Starbucks',
+     main = 'Daily Sugar Amount (g)')
+abline (v = 38, col = 'red')
 
-hist(final_sim[,2],
-     breaks=30,
-     xlab='Graph of Simulated Daily Calories Intake at Starbucks',
-     main='Daily Calories Amount')
+hist (final_sim[,2],
+     breaks = 30,
+     xlab = 'Graph of Simulated Daily Calories Intake at Starbucks',
+     main = 'Daily Calories Amount')
 
-hist(final_sim[,3],
-     breaks=30,
-     xlab='Graph of Simulated Daily Fat Intake at Starbucks',
-     main='Daily Fat Amount (g)')
-abline(v=65,col='red')
+hist (final_sim[,3],
+     breaks = 30,
+     xlab = 'Graph of Simulated Daily Fat Intake at Starbucks',
+     main = 'Daily Fat Amount (g)')
+abline (v = 65, col = 'red')
 
-hist(final_sim[,4],
-     breaks=30,
-     xlab='Graph of Simulated Daily Carbohydrates Intake at Starbucks',
-     main='Daily Carbohydrates Amount (g)')
-abline(v=300,col='red')
+hist (final_sim[,4],
+     breaks = 30,
+     xlab = 'Graph of Simulated Daily Carbohydrates Intake at Starbucks',
+     main = 'Daily Carbohydrates Amount (g)')
+abline (v=300,col='red')
 
-hist(final_sim[,5],
-     breaks=30,
-     xlab='Graph of Simulated Daily Caffine Intake at Starbucks',
-     main='Daily Caffine Amount (mg)')
-abline(v=400,col='red')
+hist (final_sim[,5],
+     breaks = 30,
+     xlab = 'Graph of Simulated Daily Caffine Intake at Starbucks',
+     main = 'Daily Caffine Amount (mg)')
+abline (v=400, col='red')
 
 ```
 
