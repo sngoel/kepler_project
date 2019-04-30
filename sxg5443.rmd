@@ -180,3 +180,34 @@ ggplot(cleaned_mcd, aes(y = Calories, x = Total.Fat)) +
   facet_wrap( ~ Type, scales = "free_x") +
   theme(panel.border = element_rect(colour = 1, fill = NA))
 ```
+
+### Model Training
+#### Splitting the dataset
+```{r}
+split <- sample.split(cleaned_mcd$Calories, SplitRatio = 0.80)
+train <- subset(cleaned_mcd, split == "TRUE")
+test <- subset(cleaned_mcd, split == "FALSE")
+```
+
+#### Linear Regression Model
+```{r}
+model <- lm(Calories~ Total.Fat + Protein + Carbohydrates, data = train)
+summary(model)
+```
+
+#### Plots to explain the model
+```{r echo = F}
+plot(model, which = 1:4)
+```
+
+#### Predictions vs Actual
+```{r echo = F}
+predictions <- predict(model, test)
+plot(test$Calories,type = "l",lty = 1.8, col="green")
+lines(predictions,type = "l", col = "blue")
+```
+
+#### Future Predictions
+```{r}
+predict(model,data.frame(Total.Fat = 20,Protein = 18,Carbohydrates = 33))
+```
