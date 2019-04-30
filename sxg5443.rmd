@@ -1,0 +1,46 @@
+---
+title: "STAT 380 Final Roject"
+subtitle: "Spring 2019"
+author: "SANCHIT GOEL"
+date: "Due: 04/30/2019 11:59PM"
+output: html_notebook
+---
+
+# Front matter
+```{r}
+# always clean up R environment
+rm(list = ls())
+
+# load all packages here
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+
+# Setting a random seed
+set.seed(1)
+```
+
+```{r}
+mcd <- read.csv(file = "nutrition_facts_mcdonalds_menu.csv", header = TRUE, sep = ",")
+sbux_f <- read.csv(file = "nutrition_facts_starbucks_food_menu.csv", header = TRUE, sep = ",")
+sbux_d <- read.csv(file = "nutrition_facts_starbucks_drink_menu.csv", header = TRUE, sep = ",")
+sbux_de <- read.csv(file = "starbucks_drink_menu_expanded.csv", header = TRUE, sep = ",")
+```
+
+```{r}
+summary(mcd)
+```
+
+
+```{r}
+summary(sbux_f)
+```
+
+```{r}
+summary(sbux_d)
+```
+
+
+```{r}
+summary(sbux_de)
+```
