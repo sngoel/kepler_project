@@ -15,22 +15,98 @@ rm(list = ls())
 library(dplyr)
 library(tidyr)
 library(ggplot2)
+library(caret)
+library(ggplot2)
+library(readr)
+library(tidyverse)
+library(ggthemes)
+library(stringr)
+library(repr)
+library(plotly)
+
+library(caTools)
 
 # Setting a random seed
 set.seed(1)
 ```
-
+# Loading and Cleaning the Datasets
+### McDonalds Dataset
 ```{r}
 mcd <- read.csv(file = "nutrition_facts_mcdonalds_menu.csv", header = TRUE, sep = ",")
+mcd[mcd == '-'] <- NA
+
+print(paste0("Pre-Cleaning Records: ", nrow(mcd)))
+
+# Dropping NA values records
+mcd <- mcd %>%
+  drop_na()
+
+print(paste0("Cleaned Records: ", nrow(mcd)))
+
+# Subsetting drinks from the menu
+drinks.oz <- mcd[str_detect(mcd$Serving.Size, " fl oz.*"),]
+drinks.ml <- mcd[str_detect(mcd$Serving.Size, 'carton'),]
+
+# Converting ounces to mililiters and further rounding the values
+drinks.oz$Serving.Size <- 
+  round(as.numeric(gsub(" fl oz.*", "", drinks.oz$Serving.Size))*29.5735, 0)
+drinks.ml$Serving.Size <- 
+  round(as.numeric(gsub(".*\\((.*)\\ ml).*", "\\1", drinks.ml$Serving.Size)), 0)
+
+# Keeping the values and removing characters
+food.g <- mcd[str_detect(mcd$Serving.Size, 'g'),] 
+food.g$Serving.Size <- 
+  round(as.numeric(gsub(".*\\((.*)\\ g).*", "\\1", food.g$Serving.Size)), 0)
+
+# Combining drinks and food menu
+# While adding a new feature for drink or food
+cleaned_mcd <- rbind(drinks.oz,drinks.ml)
+cleaned_mcd$Type <- rep("drinks", nrow(cleaned_mcd))
+food.g$Type <- rep("food", nrow(food.g))
+cleaned_mcd <- rbind(cleaned_mcd,food.g)
+
+rm("drinks.ml", "drinks.oz", "food.g")
+```
+
+### Starbucks Food Dataset
+```{r}
 sbux_f <- read.csv(file = "nutrition_facts_starbucks_food_menu.csv", header = TRUE, sep = ",")
+sbux_f[sbux_f == '-'] <- NA
+
+print(paste0("Pre-Cleaning Records: ", nrow(sbux_f)))
+sbux_f <- sbux_f %>% 
+  drop_na()
+
+print(paste0("Cleaned Records: ", nrow(sbux_f)))
+```
+
+### Starbucks Drink Dataset
+```{r}
 sbux_d <- read.csv(file = "nutrition_facts_starbucks_drink_menu.csv", header = TRUE, sep = ",")
+sbux_d[sbux_d == '-'] <- NA
+
+print(paste0("Pre-Cleaning Records: ", nrow(sbux_d)))
+sbux_d <- sbux_d %>% 
+  drop_na()
+
+print(paste0("Cleaned Records: ", nrow(sbux_d)))
+```
+
+### Starbucks Drink Expnaded Dataset
+```{r}
 sbux_de <- read.csv(file = "starbucks_drink_menu_expanded.csv", header = TRUE, sep = ",")
+sbux_de[sbux_de == '-'] <- NA
+
+print(paste0("Pre-Cleaning Records: ", nrow(sbux_de)))
+sbux_de <- sbux_de %>% 
+  drop_na()
+
+print(paste0("Cleaned Records: ", nrow(sbux_de)))
 ```
 
 ```{r}
 summary(mcd)
 ```
-
 
 ```{r}
 summary(sbux_f)
@@ -43,4 +119,22 @@ summary(sbux_d)
 
 ```{r}
 summary(sbux_de)
+```
+
+```{r}
+# Calories Histogram
+options(repr.plot.height = 3, repr.plot.width = 6)
+ggplot(cleaned_mcd, aes(x = Calories)) +
+  geom_histogram(aes(y = ..density..), fill = "lightblue", binwidth = 40, color = "darkgray") + 
+  scale_x_continuous(breaks = seq(min(cleaned_mcd$Calories), max(cleaned_mcd$Calories), by = 200)) + 
+  geom_density()
+```
+
+```{r}
+# Calories BoxPlot
+options(repr.plot.height = 3, repr.plot.width = 6)
+ggplot(cleaned_mcd, aes(x = reorder(Category, Calories), y = Calories)) +
+  geom_boxplot() +
+  coord_flip() +
+  labs(x = NULL)
 ```

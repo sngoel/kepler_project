@@ -1775,7 +1775,7 @@ $(document).ready(function () {
 <h1>Front matter</h1>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBhbHdheXMgY2xlYW4gdXAgUiBlbnZpcm9ubWVudFxucm0obGlzdCA9IGxzKCkpXG5cbiMgbG9hZCBhbGwgcGFja2FnZXMgaGVyZVxubGlicmFyeShkcGx5cilcbmxpYnJhcnkodGlkeXIpXG5saWJyYXJ5KGdncGxvdDIpXG5cbiMgc2V0IFJORyBzZWVkIChkb24ndCBjaGFuZ2UgdGhpcyBmb3IgdGhlIG1pZHRlcm0pXG5zZXQuc2VlZCg4MjIpXG5gYGAifQ== -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBhbHdheXMgY2xlYW4gdXAgUiBlbnZpcm9ubWVudFxucm0obGlzdCA9IGxzKCkpXG5cbiMgbG9hZCBhbGwgcGFja2FnZXMgaGVyZVxubGlicmFyeShkcGx5cilcbmxpYnJhcnkodGlkeXIpXG5saWJyYXJ5KGdncGxvdDIpXG5saWJyYXJ5KGNhcmV0KVxubGlicmFyeShnZ3Bsb3QyKVxubGlicmFyeShyZWFkcilcbmxpYnJhcnkodGlkeXZlcnNlKVxubGlicmFyeShnZ3RoZW1lcylcbmxpYnJhcnkoc3RyaW5ncilcbmxpYnJhcnkocmVwcilcbmxpYnJhcnkocGxvdGx5KVxuXG4jIFNldHRpbmcgYSByYW5kb20gc2VlZFxuc2V0LnNlZWQoMSlcbmBgYCJ9 -->
 <pre class="r"><code># always clean up R environment
 rm(list = ls())
 
@@ -1783,24 +1783,146 @@ rm(list = ls())
 library(dplyr)
 library(tidyr)
 library(ggplot2)
+library(caret)
+library(ggplot2)
+library(readr)
+library(tidyverse)
+library(ggthemes)
+library(stringr)
+library(repr)
+library(plotly)
 
-# set RNG seed (don&#39;t change this for the midterm)
-set.seed(822)</code></pre>
+# Setting a random seed
+set.seed(1)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+</div>
+<div id="loading-and-cleaning-the-datasets" class="section level1">
+<h1>Loading and Cleaning the Datasets</h1>
+<div id="mcdonalds-dataset" class="section level3">
+<h3>McDonalds Dataset</h3>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWNkIDwtIHJlYWQuY3N2KGZpbGU9XCJudXRyaXRpb25fZmFjdHNfbWNkb25hbGRzX21lbnUuY3N2XCIsIGhlYWRlcj1UUlVFLCBzZXA9XCIsXCIpXG5zYnV4X2YgPC0gcmVhZC5jc3YoZmlsZT1cIm51dHJpdGlvbl9mYWN0c19zdGFyYnVja3NfZm9vZF9tZW51LmNzdlwiLCBoZWFkZXI9VFJVRSwgc2VwPVwiLFwiKVxuYGBgIn0= -->
-<pre class="r"><code>mcd &lt;- read.csv(file=&quot;nutrition_facts_mcdonalds_menu.csv&quot;, header=TRUE, sep=&quot;,&quot;)
-sbux_f &lt;- read.csv(file=&quot;nutrition_facts_starbucks_food_menu.csv&quot;, header=TRUE, sep=&quot;,&quot;)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWNkIDwtIHJlYWQuY3N2KGZpbGUgPSBcIm51dHJpdGlvbl9mYWN0c19tY2RvbmFsZHNfbWVudS5jc3ZcIiwgaGVhZGVyID0gVFJVRSwgc2VwID0gXCIsXCIpXG5tY2RbbWNkID09ICctJ10gPC0gTkFcblxucHJpbnQocGFzdGUwKFwiUHJlLUNsZWFuaW5nIFJlY29yZHM6IFwiLCBucm93KG1jZCkpKVxuYGBgIn0= -->
+<pre class="r"><code>mcd &lt;- read.csv(file = &quot;nutrition_facts_mcdonalds_menu.csv&quot;, header = TRUE, sep = &quot;,&quot;)
+mcd[mcd == &#39;-&#39;] &lt;- NA
+
+print(paste0(&quot;Pre-Cleaning Records: &quot;, nrow(mcd)))</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoibGluZSAxIGFwcGVhcnMgdG8gY29udGFpbiBlbWJlZGRlZCBudWxsc2xpbmUgMiBhcHBlYXJzIHRvIGNvbnRhaW4gZW1iZWRkZWQgbnVsbHNsaW5lIDMgYXBwZWFycyB0byBjb250YWluIGVtYmVkZGVkIG51bGxzbGluZSA0IGFwcGVhcnMgdG8gY29udGFpbiBlbWJlZGRlZCBudWxsc2xpbmUgNSBhcHBlYXJzIHRvIGNvbnRhaW4gZW1iZWRkZWQgbnVsbHNFT0Ygd2l0aGluIHF1b3RlZCBzdHJpbmdlbWJlZGRlZCBudWwocykgZm91bmQgaW4gaW5wdXRcbiJ9 -->
-<pre><code>line 1 appears to contain embedded nullsline 2 appears to contain embedded nullsline 3 appears to contain embedded nullsline 4 appears to contain embedded nullsline 5 appears to contain embedded nullsEOF within quoted stringembedded nul(s) found in input</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiUHJlLUNsZWFuaW5nIFJlY29yZHM6IDI2MFwiXG4ifQ== -->
+<pre><code>[1] &quot;Pre-Cleaning Records: 260&quot;</code></pre>
 <!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2J1eF9kIDwtIHJlYWQuY3N2KGZpbGU9XCJudXRyaXRpb25fZmFjdHNfc3RhcmJ1Y2tzX2RyaW5rX21lbnUuY3N2XCIsIGhlYWRlcj1UUlVFLCBzZXA9XCIsXCIpXG5gYGAifQ== -->
-<pre class="r"><code>sbux_d &lt;- read.csv(file=&quot;nutrition_facts_starbucks_drink_menu.csv&quot;, header=TRUE, sep=&quot;,&quot;)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBEcm9wcGluZyBOQSB2YWx1ZXMgcmVjb3Jkc1xubWNkIDwtIG1jZCAlPiVcbiAgZHJvcF9uYSgpXG5cbnByaW50KHBhc3RlMChcIkNsZWFuZWQgUmVjb3JkczogXCIsIG5yb3cobWNkKSkpXG5gYGAifQ== -->
+<pre class="r"><code># Dropping NA values records
+mcd &lt;- mcd %&gt;%
+  drop_na()
+
+print(paste0(&quot;Cleaned Records: &quot;, nrow(mcd)))</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiQ2xlYW5lZCBSZWNvcmRzOiAyNjBcIlxuIn0= -->
+<pre><code>[1] &quot;Cleaned Records: 260&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBTdWJzZXR0aW5nIGRyaW5rcyBmcm9tIHRoZSBtZW51XG5kcmlua3Mub3ogPC0gbWNkW3N0cl9kZXRlY3QobWNkJFNlcnZpbmcuU2l6ZSwgXCIgZmwgb3ouKlwiKSxdXG5kcmlua3MubWwgPC0gbWNkW3N0cl9kZXRlY3QobWNkJFNlcnZpbmcuU2l6ZSwgJ2NhcnRvbicpLF1cblxuIyBDb252ZXJ0aW5nIG91bmNlcyB0byBtaWxpbGl0ZXJzIGFuZCBmdXJ0aGVyIHJvdW5kaW5nIHRoZSB2YWx1ZXNcbmRyaW5rcy5veiRTZXJ2aW5nLlNpemUgPC0gXG4gIHJvdW5kKGFzLm51bWVyaWMoZ3N1YihcIiBmbCBvei4qXCIsIFwiXCIsIGRyaW5rcy5veiRTZXJ2aW5nLlNpemUpKSoyOS41NzM1LCAwKVxuZHJpbmtzLm1sJFNlcnZpbmcuU2l6ZSA8LSBcbiAgcm91bmQoYXMubnVtZXJpYyhnc3ViKFwiLipcXFxcKCguKilcXFxcIG1sKS4qXCIsIFwiXFxcXDFcIiwgZHJpbmtzLm1sJFNlcnZpbmcuU2l6ZSkpLCAwKVxuXG4jIEtlZXBpbmcgdGhlIHZhbHVlcyBhbmQgcmVtb3ZpbmcgY2hhcmFjdGVyc1xuZm9vZC5nIDwtIG1jZFtzdHJfZGV0ZWN0KG1jZCRTZXJ2aW5nLlNpemUsICdnJyksXSBcbmZvb2QuZyRTZXJ2aW5nLlNpemUgPC0gXG4gIHJvdW5kKGFzLm51bWVyaWMoZ3N1YihcIi4qXFxcXCgoLiopXFxcXCBnKS4qXCIsIFwiXFxcXDFcIiwgZm9vZC5nJFNlcnZpbmcuU2l6ZSkpLCAwKVxuXG4jIENvbWJpbmluZyBkcmlua3MgYW5kIGZvb2QgbWVudVxuIyBXaGlsZSBhZGRpbmcgYSBuZXcgZmVhdHVyZSBmb3IgZHJpbmsgb3IgZm9vZFxuY2xlYW5lZF9tY2QgPC0gcmJpbmQoZHJpbmtzLm96LGRyaW5rcy5tbClcbmNsZWFuZWRfbWNkJFR5cGUgPC0gcmVwKFwiZHJpbmtzXCIsIG5yb3coY2xlYW5lZF9tY2QpKVxuZm9vZC5nJFR5cGUgPC0gcmVwKFwiZm9vZFwiLCBucm93KGZvb2QuZykpXG5jbGVhbmVkX21jZCA8LSByYmluZChjbGVhbmVkX21jZCxmb29kLmcpXG5cbnJtKFwiZHJpbmtzLm1sXCIsIFwiZHJpbmtzLm96XCIsIFwiZm9vZC5nXCIpXG5gYGAifQ== -->
+<pre class="r"><code># Subsetting drinks from the menu
+drinks.oz &lt;- mcd[str_detect(mcd$Serving.Size, &quot; fl oz.*&quot;),]
+drinks.ml &lt;- mcd[str_detect(mcd$Serving.Size, &#39;carton&#39;),]
+
+# Converting ounces to mililiters and further rounding the values
+drinks.oz$Serving.Size &lt;- 
+  round(as.numeric(gsub(&quot; fl oz.*&quot;, &quot;&quot;, drinks.oz$Serving.Size))*29.5735, 0)
+drinks.ml$Serving.Size &lt;- 
+  round(as.numeric(gsub(&quot;.*\\((.*)\\ ml).*&quot;, &quot;\\1&quot;, drinks.ml$Serving.Size)), 0)
+
+# Keeping the values and removing characters
+food.g &lt;- mcd[str_detect(mcd$Serving.Size, &#39;g&#39;),] 
+food.g$Serving.Size &lt;- 
+  round(as.numeric(gsub(&quot;.*\\((.*)\\ g).*&quot;, &quot;\\1&quot;, food.g$Serving.Size)), 0)
+
+# Combining drinks and food menu
+# While adding a new feature for drink or food
+cleaned_mcd &lt;- rbind(drinks.oz,drinks.ml)
+cleaned_mcd$Type &lt;- rep(&quot;drinks&quot;, nrow(cleaned_mcd))
+food.g$Type &lt;- rep(&quot;food&quot;, nrow(food.g))
+cleaned_mcd &lt;- rbind(cleaned_mcd,food.g)
+
+rm(&quot;drinks.ml&quot;, &quot;drinks.oz&quot;, &quot;food.g&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="starbucks-food-dataset" class="section level3">
+<h3>Starbucks Food Dataset</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2J1eF9mIDwtIHJlYWQuY3N2KGZpbGUgPSBcIm51dHJpdGlvbl9mYWN0c19zdGFyYnVja3NfZm9vZF9tZW51LmNzdlwiLCBoZWFkZXIgPSBUUlVFLCBzZXAgPSBcIixcIilcbnNidXhfZltzYnV4X2YgPT0gJy0nXSA8LSBOQVxuXG5wcmludChwYXN0ZTAoXCJQcmUtQ2xlYW5pbmcgUmVjb3JkczogXCIsIG5yb3coc2J1eF9mKSkpXG5gYGAifQ== -->
+<pre class="r"><code>sbux_f &lt;- read.csv(file = &quot;nutrition_facts_starbucks_food_menu.csv&quot;, header = TRUE, sep = &quot;,&quot;)
+sbux_f[sbux_f == &#39;-&#39;] &lt;- NA
+
+print(paste0(&quot;Pre-Cleaning Records: &quot;, nrow(sbux_f)))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiUHJlLUNsZWFuaW5nIFJlY29yZHM6IDExM1wiXG4ifQ== -->
+<pre><code>[1] &quot;Pre-Cleaning Records: 113&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2J1eF9mIDwtIHNidXhfZiAlPiUgXG4gIGRyb3BfbmEoKVxuXG5wcmludChwYXN0ZTAoXCJDbGVhbmVkIFJlY29yZHM6IFwiLCBucm93KHNidXhfZikpKVxuYGBgIn0= -->
+<pre class="r"><code>sbux_f &lt;- sbux_f %&gt;% 
+  drop_na()
+
+print(paste0(&quot;Cleaned Records: &quot;, nrow(sbux_f)))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiQ2xlYW5lZCBSZWNvcmRzOiAxMTNcIlxuIn0= -->
+<pre><code>[1] &quot;Cleaned Records: 113&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="starbucks-drink-dataset" class="section level3">
+<h3>Starbucks Drink Dataset</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2J1eF9kIDwtIHJlYWQuY3N2KGZpbGUgPSBcIm51dHJpdGlvbl9mYWN0c19zdGFyYnVja3NfZHJpbmtfbWVudS5jc3ZcIiwgaGVhZGVyID0gVFJVRSwgc2VwID0gXCIsXCIpXG5zYnV4X2Rbc2J1eF9kID09ICctJ10gPC0gTkFcblxucHJpbnQocGFzdGUwKFwiUHJlLUNsZWFuaW5nIFJlY29yZHM6IFwiLCBucm93KHNidXhfZCkpKVxuYGBgIn0= -->
+<pre class="r"><code>sbux_d &lt;- read.csv(file = &quot;nutrition_facts_starbucks_drink_menu.csv&quot;, header = TRUE, sep = &quot;,&quot;)
+sbux_d[sbux_d == &#39;-&#39;] &lt;- NA
+
+print(paste0(&quot;Pre-Cleaning Records: &quot;, nrow(sbux_d)))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiUHJlLUNsZWFuaW5nIFJlY29yZHM6IDE3N1wiXG4ifQ== -->
+<pre><code>[1] &quot;Pre-Cleaning Records: 177&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2J1eF9kIDwtIHNidXhfZCAlPiUgXG4gIGRyb3BfbmEoKVxuXG5wcmludChwYXN0ZTAoXCJDbGVhbmVkIFJlY29yZHM6IFwiLCBucm93KHNidXhfZCkpKVxuYGBgIn0= -->
+<pre class="r"><code>sbux_d &lt;- sbux_d %&gt;% 
+  drop_na()
+
+print(paste0(&quot;Cleaned Records: &quot;, nrow(sbux_d)))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiQ2xlYW5lZCBSZWNvcmRzOiA5MlwiXG4ifQ== -->
+<pre><code>[1] &quot;Cleaned Records: 92&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="starbucks-drink-expnaded-dataset" class="section level3">
+<h3>Starbucks Drink Expnaded Dataset</h3>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2J1eF9kZSA8LSByZWFkLmNzdihmaWxlID0gXCJzdGFyYnVja3NfZHJpbmtfbWVudV9leHBhbmRlZC5jc3ZcIiwgaGVhZGVyID0gVFJVRSwgc2VwID0gXCIsXCIpXG5zYnV4X2RlW3NidXhfZGUgPT0gJy0nXSA8LSBOQVxuXG5wcmludChwYXN0ZTAoXCJQcmUtQ2xlYW5pbmcgUmVjb3JkczogXCIsIG5yb3coc2J1eF9kZSkpKVxuYGBgIn0= -->
+<pre class="r"><code>sbux_de &lt;- read.csv(file = &quot;starbucks_drink_menu_expanded.csv&quot;, header = TRUE, sep = &quot;,&quot;)
+sbux_de[sbux_de == &#39;-&#39;] &lt;- NA
+
+print(paste0(&quot;Pre-Cleaning Records: &quot;, nrow(sbux_de)))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiUHJlLUNsZWFuaW5nIFJlY29yZHM6IDI0MlwiXG4ifQ== -->
+<pre><code>[1] &quot;Pre-Cleaning Records: 242&quot;</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2J1eF9kZSA8LSBzYnV4X2RlICU+JSBcbiAgZHJvcF9uYSgpXG5cbnByaW50KHBhc3RlMChcIkNsZWFuZWQgUmVjb3JkczogXCIsIG5yb3coc2J1eF9kZSkpKVxuYGBgIn0= -->
+<pre class="r"><code>sbux_de &lt;- sbux_de %&gt;% 
+  drop_na()
+
+print(paste0(&quot;Cleaned Records: &quot;, nrow(sbux_de)))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwiQ2xlYW5lZCBSZWNvcmRzOiAyNDJcIlxuIn0= -->
+<pre><code>[1] &quot;Cleaned Records: 242&quot;</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
@@ -1862,260 +1984,127 @@ sbux_f &lt;- read.csv(file=&quot;nutrition_facts_starbucks_food_menu.csv&quot;, 
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShIbWlzYylcbmBgYCJ9 -->
-<pre class="r"><code>library(Hmisc)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3VtbWFyeShzYnV4X2YpXG5gYGAifQ== -->
+<pre class="r"><code>summary(sbux_f)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiBsYXR0aWNlXG5Mb2FkaW5nIHJlcXVpcmVkIHBhY2thZ2U6IHN1cnZpdmFsXG5Mb2FkaW5nIHJlcXVpcmVkIHBhY2thZ2U6IEZvcm11bGFcbkxvYWRpbmcgcmVxdWlyZWQgcGFja2FnZTogZ2dwbG90MlxuUmVnaXN0ZXJlZCBTMyBtZXRob2RzIG92ZXJ3cml0dGVuIGJ5ICdnZ3Bsb3QyJzpcbiAgbWV0aG9kICAgICAgICAgZnJvbSBcbiAgWy5xdW9zdXJlcyAgICAgcmxhbmdcbiAgYy5xdW9zdXJlcyAgICAgcmxhbmdcbiAgcHJpbnQucXVvc3VyZXMgcmxhbmdcblJlZ2lzdGVyZWQgUzMgbWV0aG9kIG92ZXJ3cml0dGVuIGJ5ICdkcGx5cic6XG4gIG1ldGhvZCAgICAgICAgICAgZnJvbVxuICBwcmludC5yb3d3aXNlX2RmICAgICBcblJlZ2lzdGVyZWQgUzMgbWV0aG9kIG92ZXJ3cml0dGVuIGJ5ICdodG1sd2lkZ2V0cyc6XG4gIG1ldGhvZCAgICAgICAgICAgZnJvbSAgICAgICAgIFxuICBwcmludC5odG1sd2lkZ2V0IHRvb2xzOnJzdHVkaW9cblJlZ2lzdGVyZWQgUzMgbWV0aG9kIG92ZXJ3cml0dGVuIGJ5ICdkYXRhLnRhYmxlJzpcbiAgbWV0aG9kICAgICAgICAgICBmcm9tXG4gIHByaW50LmRhdGEudGFibGUgICAgIFxuXG5BdHRhY2hpbmcgcGFja2FnZTog46S847ixSG1pc2PjpLzjuLJcblxuVGhlIGZvbGxvd2luZyBvYmplY3RzIGFyZSBtYXNrZWQgZnJvbSDjpLzjuLFwYWNrYWdlOmJhc2XjpLzjuLI6XG5cbiAgICBmb3JtYXQucHZhbCwgdW5pdHNcbiJ9 -->
-<pre><code>Loading required package: lattice
-Loading required package: survival
-Loading required package: Formula
-Loading required package: ggplot2
-Registered S3 methods overwritten by &#39;ggplot2&#39;:
-  method         from 
-  [.quosures     rlang
-  c.quosures     rlang
-  print.quosures rlang
-Registered S3 method overwritten by &#39;dplyr&#39;:
-  method           from
-  print.rowwise_df     
-Registered S3 method overwritten by &#39;htmlwidgets&#39;:
-  method           from         
-  print.htmlwidget tools:rstudio
-Registered S3 method overwritten by &#39;data.table&#39;:
-  method           from
-  print.data.table     
-
-Attaching package: 㤼㸱Hmisc㤼㸲
-
-The following objects are masked from 㤼㸱package:base㤼㸲:
-
-    format.pval, units</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGVzY3JpYmUobWNkKSBcbmBgYCJ9 -->
-<pre class="r"><code>describe(mcd) </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoibWNkIFxuXG4gMjQgIFZhcmlhYmxlcyAgICAgIDI2MCAgT2JzZXJ2YXRpb25zXG4tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLVxuQ2F0ZWdvcnkgXG4gICAgICAgbiAgbWlzc2luZyBkaXN0aW5jdCBcbiAgICAgMjYwICAgICAgICAwICAgICAgICA5IFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG5WYWx1ZSAgICAgICAgICAgICBCZWVmICYgUG9yayAgICAgICAgICBCZXZlcmFnZXMgICAgICAgICAgQnJlYWtmYXN0ICAgICBDaGlja2VuICYgRmlzaCAgICAgICBDb2ZmZWUgJiBUZWFcbkZyZXF1ZW5jeSAgICAgICAgICAgICAgICAgIDE1ICAgICAgICAgICAgICAgICAyNyAgICAgICAgICAgICAgICAgNDIgICAgICAgICAgICAgICAgIDI3ICAgICAgICAgICAgICAgICA5NVxuUHJvcG9ydGlvbiAgICAgICAgICAgICAgMC4wNTggICAgICAgICAgICAgIDAuMTA0ICAgICAgICAgICAgICAwLjE2MiAgICAgICAgICAgICAgMC4xMDQgICAgICAgICAgICAgIDAuMzY1XG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuVmFsdWUgICAgICAgICAgICAgICAgRGVzc2VydHMgICAgICAgICAgICAgU2FsYWRzIFNtb290aGllcyAmIFNoYWtlcyAgICAgU25hY2tzICYgU2lkZXNcbkZyZXF1ZW5jeSAgICAgICAgICAgICAgICAgICA3ICAgICAgICAgICAgICAgICAgNiAgICAgICAgICAgICAgICAgMjggICAgICAgICAgICAgICAgIDEzXG5Qcm9wb3J0aW9uICAgICAgICAgICAgICAwLjAyNyAgICAgICAgICAgICAgMC4wMjMgICAgICAgICAgICAgIDAuMTA4ICAgICAgICAgICAgICAwLjA1MFxuLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS1cbkl0ZW0gXG4gICAgICAgbiAgbWlzc2luZyBkaXN0aW5jdCBcbiAgICAgMjYwICAgICAgICAwICAgICAgMjYwIFxuXG5sb3dlc3QgOiAxJSBMb3cgRmF0IE1pbGsgSnVnICAgICAgICAgICBBcHBsZSBTbGljZXMgICAgICAgICAgICAgICAgICBCYWNvbiBCdWZmYWxvIFJhbmNoIE1jQ2hpY2tlbiBCYWNvbiBDaGVkZGFyIE1jQ2hpY2tlbiAgICAgICBCYWNvbiBDbHViaG91c2UgQnVyZ2VyICAgICAgIFxuaGlnaGVzdDogU3dlZXQgVGVhIChNZWRpdW0pICAgICAgICAgICAgU3dlZXQgVGVhIChTbWFsbCkgICAgICAgICAgICAgVmFuaWxsYSBTaGFrZSAoTGFyZ2UpICAgICAgICAgVmFuaWxsYSBTaGFrZSAoTWVkaXVtKSAgICAgICAgVmFuaWxsYSBTaGFrZSAoU21hbGwpICAgICAgICBcbi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tXG5TZXJ2aW5nLlNpemUgXG4gICAgICAgbiAgbWlzc2luZyBkaXN0aW5jdCBcbiAgICAgMjYwICAgICAgICAwICAgICAgMTA3IFxuXG5sb3dlc3QgOiAxIGNhcnRvbiAoMjM2IG1sKSAxIGNvb2tpZSAoMzMgZykgICAxIG96ICgyOSBnKSAgICAgICAxLjIgb3ogKDM0IGcpICAgICAxLjMgb3ogKDM4IGcpICAgIFxuaGlnaGVzdDogOSBveiAoMjU1IGcpICAgICAgOS41IG96ICgyNjkgZykgICAgOS41IG96ICgyNzAgZykgICAgOS42IG96ICgyNTEgZykgICAgOS42IG96ICgyNzIgZykgICBcbi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tXG5DYWxvcmllcyBcbiAgICAgICBuICBtaXNzaW5nIGRpc3RpbmN0ICAgICBJbmZvICAgICBNZWFuICAgICAgR21kICAgICAgLjA1ICAgICAgLjEwICAgICAgLjI1ICAgICAgLjUwICAgICAgLjc1ICAgICAgLjkwIFxuICAgICAyNjAgICAgICAgIDAgICAgICAgNzggICAgMC45OTkgICAgMzY4LjMgICAgMjU1LjggICAgICAgIDAgICAgICAxMDkgICAgICAyMTAgICAgICAzNDAgICAgICA1MDAgICAgICA2NzAgXG4gICAgIC45NSBcbiAgICAgNzYyIFxuXG5sb3dlc3QgOiAgICAwICAgMTUgICAyMCAgIDQ1ICAgODAsIGhpZ2hlc3Q6ICA5OTAgMTA1MCAxMDkwIDExNTAgMTg4MFxuLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS1cbkNhbG9yaWVzLmZyb20uRmF0IFxuICAgICAgIG4gIG1pc3NpbmcgZGlzdGluY3QgICAgIEluZm8gICAgIE1lYW4gICAgICBHbWQgICAgICAuMDUgICAgICAuMTAgICAgICAuMjUgICAgICAuNTAgICAgICAuNzUgICAgICAuOTAgXG4gICAgIDI2MCAgICAgICAgMCAgICAgICA0OCAgICAgMC45OSAgICAxMjcuMSAgICAxMzEuMSAgICAgICAgMCAgICAgICAgMCAgICAgICAyMCAgICAgIDEwMCAgICAgIDIwMCAgICAgIDI4MCBcbiAgICAgLjk1IFxuICAgICAzMzAgXG5cbmxvd2VzdCA6ICAgIDAgICAgNSAgIDEwICAgMjAgICAzMCwgaGlnaGVzdDogIDQ3MCAgNTEwICA1MzAgIDU0MCAxMDYwXG4tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLVxuVG90YWwuRmF0IFxuICAgICAgIG4gIG1pc3NpbmcgZGlzdGluY3QgICAgIEluZm8gICAgIE1lYW4gICAgICBHbWQgICAgICAuMDUgICAgICAuMTAgICAgICAuMjUgICAgICAuNTAgICAgICAuNzUgICAgICAuOTAgXG4gICAgIDI2MCAgICAgICAgMCAgICAgICA1MiAgICAwLjk5MyAgICAxNC4xNyAgICAxNC41NiAgICAwLjAwMCAgICAwLjAwMCAgICAyLjM3NSAgIDExLjAwMCAgIDIyLjI1MCAgIDMxLjAwMCBcbiAgICAgLjk1IFxuICAzNy4wMDAgXG5cbmxvd2VzdCA6ICAgMC4wICAgMC41ICAgMS4wICAgMS41ICAgMi4wLCBoaWdoZXN0OiAgNTIuMCAgNTYuMCAgNTkuMCAgNjAuMCAxMTguMFxuLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS1cblRvdGFsLkZhdC4uLi5EYWlseS5WYWx1ZS4gXG4gICAgICAgbiAgbWlzc2luZyBkaXN0aW5jdCAgICAgSW5mbyAgICAgTWVhbiAgICAgIEdtZCAgICAgIC4wNSAgICAgIC4xMCAgICAgIC4yNSAgICAgIC41MCAgICAgIC43NSAgICAgIC45MCBcbiAgICAgMjYwICAgICAgICAwICAgICAgIDYzICAgIDAuOTkzICAgIDIxLjgyICAgIDIyLjQyICAgICAwLjAwICAgICAwLjAwICAgICAzLjc1ICAgIDE3LjAwICAgIDM1LjAwICAgIDQ4LjAwIFxuICAgICAuOTUgXG4gICA1Ny4wMCBcblxubG93ZXN0IDogICAwICAgMSAgIDIgICAzICAgNCwgaGlnaGVzdDogIDgwICA4NyAgOTEgIDkzIDE4MlxuLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS1cblNhdHVyYXRlZC5GYXQgXG4gICAgICAgbiAgbWlzc2luZyBkaXN0aW5jdCAgICAgSW5mbyAgICAgTWVhbiAgICAgIEdtZCAgICAgIC4wNSAgICAgIC4xMCAgICAgIC4yNSAgICAgIC41MCAgICAgIC43NSAgICAgIC45MCBcbiAgICAgMjYwICAgICAgICAwICAgICAgIDI2ICAgIDAuOTg2ICAgIDYuMDA4ICAgIDUuOTYxICAgICAgICAwICAgICAgICAwICAgICAgICAxICAgICAgICA1ICAgICAgIDEwICAgICAgIDE0IFxuICAgICAuOTUgXG4gICAgICAxNiBcblxubG93ZXN0IDogIDAuMCAgMC41ICAxLjAgIDEuNSAgMi4wLCBoaWdoZXN0OiAxNi4wIDE3LjAgMTguMCAxOS4wIDIwLjBcbi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tXG5TYXR1cmF0ZWQuRmF0Li4uLkRhaWx5LlZhbHVlLiBcbiAgICAgICBuICBtaXNzaW5nIGRpc3RpbmN0ICAgICBJbmZvICAgICBNZWFuICAgICAgR21kICAgICAgLjA1ICAgICAgLjEwICAgICAgLjI1ICAgICAgLjUwICAgICAgLjc1ICAgICAgLjkwIFxuICAgICAyNjAgICAgICAgIDAgICAgICAgNzQgICAgMC45ODcgICAgMjkuOTcgICAgMjkuODEgICAgIDAuMDAgICAgIDAuMDAgICAgIDQuNzUgICAgMjQuMDAgICAgNDguMDAgICAgNzEuMDAgXG4gICAgIC45NSBcbiAgIDc4LjAwIFxuXG5sb3dlc3QgOiAgIDAgICAzICAgNCAgIDUgICA2LCBoaWdoZXN0OiAgOTAgIDk2IDEwMCAxMDEgMTAyXG4tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLVxuVHJhbnMuRmF0IFxuICAgICAgIG4gIG1pc3NpbmcgZGlzdGluY3QgICAgIEluZm8gICAgIE1lYW4gICAgICBHbWQgXG4gICAgIDI2MCAgICAgICAgMCAgICAgICAgNSAgICAwLjUxNSAgIDAuMjAzOCAgIDAuMzM4OSBcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcblZhbHVlICAgICAgICAwLjAgICAwLjUgICAxLjAgICAxLjUgICAyLjVcbkZyZXF1ZW5jeSAgICAyMDQgICAgMTcgICAgMzAgICAgIDggICAgIDFcblByb3BvcnRpb24gMC43ODUgMC4wNjUgMC4xMTUgMC4wMzEgMC4wMDRcbi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tXG5DaG9sZXN0ZXJvbCBcbiAgICAgICBuICBtaXNzaW5nIGRpc3RpbmN0ICAgICBJbmZvICAgICBNZWFuICAgICAgR21kICAgICAgLjA1ICAgICAgLjEwICAgICAgLjI1ICAgICAgLjUwICAgICAgLjc1ICAgICAgLjkwIFxuICAgICAyNjAgICAgICAgIDAgICAgICAgMzUgICAgMC45OTMgICAgNTQuOTQgICAgIDY4LjMgICAgICAgIDAgICAgICAgIDAgICAgICAgIDUgICAgICAgMzUgICAgICAgNjUgICAgICAgOTUgXG4gICAgIC45NSBcbiAgICAgMjUwIFxuXG5sb3dlc3QgOiAgIDAgICA1ICAxMCAgMTUgIDIwLCBoaWdoZXN0OiAyODUgMjk1IDMwMCA1NTUgNTc1XG4tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLVxuQ2hvbGVzdGVyb2wuLi4uRGFpbHkuVmFsdWUuIFxuICAgICAgIG4gIG1pc3NpbmcgZGlzdGluY3QgICAgIEluZm8gICAgIE1lYW4gICAgICBHbWQgICAgICAuMDUgICAgICAuMTAgICAgICAuMjUgICAgICAuNTAgICAgICAuNzUgICAgICAuOTAgXG4gICAgIDI2MCAgICAgICAgMCAgICAgICA0OCAgICAwLjk5NCAgICAxOC4zOSAgICAyMi43NiAgICAgMC4wMCAgICAgMC4wMCAgICAgMi4wMCAgICAxMS4wMCAgICAyMS4yNSAgICAzMi4wMCBcbiAgICAgLjk1IFxuICAgODMuMDUgXG5cbmxvd2VzdCA6ICAgMCAgIDEgICAyICAgMyAgIDUsIGhpZ2hlc3Q6ICA5NSAgOTkgMTAwIDE4NSAxOTJcbi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tXG5Tb2RpdW0gXG4gICAgICAgbiAgbWlzc2luZyBkaXN0aW5jdCAgICAgSW5mbyAgICAgTWVhbiAgICAgIEdtZCAgICAgIC4wNSAgICAgIC4xMCAgICAgIC4yNSAgICAgIC41MCAgICAgIC43NSAgICAgIC45MCBcbiAgICAgMjYwICAgICAgICAwICAgICAgMTExICAgICAgICAxICAgIDQ5NS44ICAgIDU4MC4yICAgICAgNS4wICAgICAyNC41ICAgIDEwNy41ICAgIDE5MC4wICAgIDg2NS4wICAgMTMyMi4wIFxuICAgICAuOTUgXG4gIDE1MTEuNSBcblxubG93ZXN0IDogICAgMCAgICA1ICAgMTAgICAxNSAgIDIwLCBoaWdoZXN0OiAyMTUwIDIxNzAgMjI2MCAyMjkwIDM2MDBcbi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tXG5Tb2RpdW0uLi4uRGFpbHkuVmFsdWUuIFxuICAgICAgIG4gIG1pc3NpbmcgZGlzdGluY3QgICAgIEluZm8gICAgIE1lYW4gICAgICBHbWQgICAgICAuMDUgICAgICAuMTAgICAgICAuMjUgICAgICAuNTAgICAgICAuNzUgICAgICAuOTAgXG4gICAgIDI2MCAgICAgICAgMCAgICAgICA2NSAgICAwLjk5OCAgICAyMC42OCAgICAyNC4xNyAgICAgMC4wMCAgICAgMS4wMCAgICAgNC43NSAgICAgOC4wMCAgICAzNi4yNSAgICA1NS4xMCBcbiAgICAgLjk1IFxuICAgNjMuMDUgXG5cbmxvd2VzdCA6ICAgMCAgIDEgICAyICAgMyAgIDQsIGhpZ2hlc3Q6ICA5MCAgOTEgIDk0ICA5NSAxNTBcbi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tXG5DYXJib2h5ZHJhdGVzIFxuICAgICAgIG4gIG1pc3NpbmcgZGlzdGluY3QgICAgIEluZm8gICAgIE1lYW4gICAgICBHbWQgICAgICAuMDUgICAgICAuMTAgICAgICAuMjUgICAgICAuNTAgICAgICAuNzUgICAgICAuOTAgXG4gICAgIDI2MCAgICAgICAgMCAgICAgICA4NCAgICAwLjk5OSAgICA0Ny4zNSAgICAzMC4zOSAgICAgIDAuMCAgICAgMTUuMCAgICAgMzAuMCAgICAgNDQuMCAgICAgNjAuMCAgICAgNzkuMSBcbiAgICAgLjk1IFxuICAgMTEwLjAgXG5cbmxvd2VzdCA6ICAgMCAgIDQgICA3ICAgOCAgIDksIGhpZ2hlc3Q6IDExOCAxMzUgMTM5IDE0MCAxNDFcbi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tXG5DYXJib2h5ZHJhdGVzLi4uLkRhaWx5LlZhbHVlLiBcbiAgICAgICBuICBtaXNzaW5nIGRpc3RpbmN0ICAgICBJbmZvICAgICBNZWFuICAgICAgR21kICAgICAgLjA1ICAgICAgLjEwICAgICAgLjI1ICAgICAgLjUwICAgICAgLjc1ICAgICAgLjkwIFxuICAgICAyNjAgICAgICAgIDAgICAgICAgNDAgICAgMC45OTggICAgMTUuNzggICAgMTAuMTMgICAgICAwLjAgICAgICA1LjAgICAgIDEwLjAgICAgIDE1LjAgICAgIDIwLjAgICAgIDI2LjEgXG4gICAgIC45NSBcbiAgICAzNy4wIFxuXG5sb3dlc3QgOiAgMCAgMSAgMiAgMyAgNCwgaGlnaGVzdDogMzggMzkgNDUgNDYgNDdcbi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tXG5EaWV0YXJ5LkZpYmVyIFxuICAgICAgIG4gIG1pc3NpbmcgZGlzdGluY3QgICAgIEluZm8gICAgIE1lYW4gICAgICBHbWQgXG4gICAgIDI2MCAgICAgICAgMCAgICAgICAgOCAgICAwLjk0NCAgICAxLjYzMSAgICAxLjY1OCBcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcblZhbHVlICAgICAgICAgIDAgICAgIDEgICAgIDIgICAgIDMgICAgIDQgICAgIDUgICAgIDYgICAgIDdcbkZyZXF1ZW5jeSAgICAgNjkgICAgODAgICAgNDQgICAgMzggICAgMTUgICAgIDYgICAgIDQgICAgIDRcblByb3BvcnRpb24gMC4yNjUgMC4zMDggMC4xNjkgMC4xNDYgMC4wNTggMC4wMjMgMC4wMTUgMC4wMTVcbi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tXG5EaWV0YXJ5LkZpYmVyLi4uLkRhaWx5LlZhbHVlLiBcbiAgICAgICBuICBtaXNzaW5nIGRpc3RpbmN0ICAgICBJbmZvICAgICBNZWFuICAgICAgR21kICAgICAgLjA1ICAgICAgLjEwICAgICAgLjI1ICAgICAgLjUwICAgICAgLjc1ICAgICAgLjkwIFxuICAgICAyNjAgICAgICAgIDAgICAgICAgMjQgICAgMC45NzkgICAgNi41MzEgICAgNi43NzIgICAgICAgIDAgICAgICAgIDAgICAgICAgIDAgICAgICAgIDUgICAgICAgMTAgICAgICAgMTUgXG4gICAgIC45NSBcbiAgICAgIDE5IFxuXG5sb3dlc3QgOiAgMCAgMiAgMyAgNCAgNSwgaGlnaGVzdDogMjAgMjIgMjMgMjQgMjhcbi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tXG5TdWdhcnMgXG4gICAgICAgbiAgbWlzc2luZyBkaXN0aW5jdCAgICAgSW5mbyAgICAgTWVhbiAgICAgIEdtZCAgICAgIC4wNSAgICAgIC4xMCAgICAgIC4yNSAgICAgIC41MCAgICAgIC43NSAgICAgIC45MCBcbiAgICAgMjYwICAgICAgICAwICAgICAgIDgzICAgIDAuOTk5ICAgIDI5LjQyICAgIDMxLjA2ICAgICAwLjAwICAgICAxLjAwICAgICA1Ljc1ICAgIDE3LjUwICAgIDQ4LjAwICAgIDY5LjEwIFxuICAgICAuOTUgXG4gICA4NS4xNSBcblxubG93ZXN0IDogICAwICAgMSAgIDIgICAzICAgNCwgaGlnaGVzdDogMTAzIDExNSAxMjAgMTIzIDEyOFxuLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS1cblByb3RlaW4gXG4gICAgICAgbiAgbWlzc2luZyBkaXN0aW5jdCAgICAgSW5mbyAgICAgTWVhbiAgICAgIEdtZCAgICAgIC4wNSAgICAgIC4xMCAgICAgIC4yNSAgICAgIC41MCAgICAgIC43NSAgICAgIC45MCBcbiAgICAgMjYwICAgICAgICAwICAgICAgIDQyICAgIDAuOTk3ICAgIDEzLjM0ICAgIDEyLjEyICAgICAgMC4wICAgICAgMC4wICAgICAgNC4wICAgICAxMi4wICAgICAxOS4wICAgICAyOC4xIFxuICAgICAuOTUgXG4gICAgMzYuMCBcblxubG93ZXN0IDogIDAgIDEgIDIgIDMgIDQsIGhpZ2hlc3Q6IDM5IDQwIDQ0IDQ4IDg3XG4tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLVxuVml0YW1pbi5BLi4uLkRhaWx5LlZhbHVlLiBcbiAgICAgICBuICBtaXNzaW5nIGRpc3RpbmN0ICAgICBJbmZvICAgICBNZWFuICAgICAgR21kICAgICAgLjA1ICAgICAgLjEwICAgICAgLjI1ICAgICAgLjUwICAgICAgLjc1ICAgICAgLjkwIFxuICAgICAyNjAgICAgICAgIDAgICAgICAgMTkgICAgMC45NzcgICAgMTMuNDMgICAgMTcuMzMgICAgICAgIDAgICAgICAgIDAgICAgICAgIDIgICAgICAgIDggICAgICAgMTUgICAgICAgMjUgXG4gICAgIC45NSBcbiAgICAgIDYwIFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuVmFsdWUgICAgICAgICAgMCAgICAgMiAgICAgNCAgICAgNiAgICAgOCAgICAxMCAgICAxNSAgICAyMCAgICAyNSAgICAzMCAgICA0MCAgICA0NSAgICA1MCAgICA2MCAgICA3MCAgIDEwMCAgIDExMFxuRnJlcXVlbmN5ICAgICA2MiAgICAxOCAgICAyNSAgICAxNSAgICAxNSAgICA0MCAgICA0MCAgICAxNyAgICAgNiAgICAgNSAgICAgMSAgICAgMSAgICAgMSAgICAgNyAgICAgMSAgICAgMSAgICAgMVxuUHJvcG9ydGlvbiAwLjIzOCAwLjA2OSAwLjA5NiAwLjA1OCAwLjA1OCAwLjE1NCAwLjE1NCAwLjA2NSAwLjAyMyAwLjAxOSAwLjAwNCAwLjAwNCAwLjAwNCAwLjAyNyAwLjAwNCAwLjAwNCAwLjAwNFxuICAgICAgICAgICAgICAgICAgICAgIFxuVmFsdWUgICAgICAgIDE2MCAgIDE3MFxuRnJlcXVlbmN5ICAgICAgMSAgICAgM1xuUHJvcG9ydGlvbiAwLjAwNCAwLjAxMlxuLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS1cblZpdGFtaW4uQy4uLi5EYWlseS5WYWx1ZS4gXG4gICAgICAgbiAgbWlzc2luZyBkaXN0aW5jdCAgICAgSW5mbyAgICAgTWVhbiAgICAgIEdtZCAgICAgIC4wNSAgICAgIC4xMCAgICAgIC4yNSAgICAgIC41MCAgICAgIC43NSAgICAgIC45MCBcbiAgICAgMjYwICAgICAgICAwICAgICAgIDE3ICAgIDAuNzU2ICAgIDguNTM1ICAgIDE0Ljg4ICAgICAgICAwICAgICAgICAwICAgICAgICAwICAgICAgICAwICAgICAgICA0ICAgICAgIDI1IFxuICAgICAuOTUgXG4gICAgICAzMCBcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcblZhbHVlICAgICAgICAgIDAgICAgIDIgICAgIDQgICAgIDYgICAgIDggICAgMTAgICAgMTUgICAgMjAgICAgMjUgICAgMzAgICAgMzUgICAgNDUgICAgNzAgICAxMDAgICAxMzAgICAxNjAgICAyNDBcbkZyZXF1ZW5jeSAgICAxNjIgICAgMzEgICAgIDYgICAgIDEgICAgIDkgICAgIDUgICAgMTIgICAgIDcgICAgIDggICAgIDggICAgIDEgICAgIDIgICAgIDEgICAgIDEgICAgIDMgICAgIDIgICAgIDFcblByb3BvcnRpb24gMC42MjMgMC4xMTkgMC4wMjMgMC4wMDQgMC4wMzUgMC4wMTkgMC4wNDYgMC4wMjcgMC4wMzEgMC4wMzEgMC4wMDQgMC4wMDggMC4wMDQgMC4wMDQgMC4wMTIgMC4wMDggMC4wMDRcbi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tXG5DYWxjaXVtLi4uLkRhaWx5LlZhbHVlLiBcbiAgICAgICBuICBtaXNzaW5nIGRpc3RpbmN0ICAgICBJbmZvICAgICBNZWFuICAgICAgR21kICAgICAgLjA1ICAgICAgLjEwICAgICAgLjI1ICAgICAgLjUwICAgICAgLjc1ICAgICAgLjkwIFxuICAgICAyNjAgICAgICAgIDAgICAgICAgMTYgICAgMC45OTIgICAgMjAuOTcgICAgMTkuMTcgICAgICAgIDAgICAgICAgIDAgICAgICAgIDYgICAgICAgMjAgICAgICAgMzAgICAgICAgNTAgXG4gICAgIC45NSBcbiAgICAgIDUwIFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuVmFsdWUgICAgICAgICAgMCAgICAgMiAgICAgNCAgICAgNiAgICAgOCAgICAxMCAgICAxNSAgICAyMCAgICAyNSAgICAzMCAgICAzNSAgICA0MCAgICA0NSAgICA1MCAgICA2MCAgICA3MFxuRnJlcXVlbmN5ICAgICAzNiAgICAxMCAgICAxNCAgICAgNiAgICAxNyAgICAxOCAgICAyNSAgICAyMCAgICAyMiAgICAzMyAgICAxMCAgICAxNyAgICAgNCAgICAyMCAgICAgNiAgICAgMlxuUHJvcG9ydGlvbiAwLjEzOCAwLjAzOCAwLjA1NCAwLjAyMyAwLjA2NSAwLjA2OSAwLjA5NiAwLjA3NyAwLjA4NSAwLjEyNyAwLjAzOCAwLjA2NSAwLjAxNSAwLjA3NyAwLjAyMyAwLjAwOFxuLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS1cbklyb24uLi4uRGFpbHkuVmFsdWUuIFxuICAgICAgIG4gIG1pc3NpbmcgZGlzdGluY3QgICAgIEluZm8gICAgIE1lYW4gICAgICBHbWQgICAgICAuMDUgICAgICAuMTAgICAgICAuMjUgICAgICAuNTAgICAgICAuNzUgICAgICAuOTAgXG4gICAgIDI2MCAgICAgICAgMCAgICAgICAxMiAgICAwLjk2MyAgICA3LjczNSAgICA5LjIwMyAgICAgICAgMCAgICAgICAgMCAgICAgICAgMCAgICAgICAgNCAgICAgICAxNSAgICAgICAyMCBcbiAgICAgLjk1IFxuICAgICAgMjUgXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG5WYWx1ZSAgICAgICAgICAwICAgICAyICAgICA0ICAgICA2ICAgICA4ICAgIDEwICAgIDE1ICAgIDIwICAgIDI1ICAgIDMwICAgIDM1ICAgIDQwXG5GcmVxdWVuY3kgICAgIDgyICAgIDMzICAgIDIwICAgIDE3ICAgIDE2ICAgIDIwICAgIDMxICAgIDI1ICAgICA3ICAgICA2ICAgICAxICAgICAyXG5Qcm9wb3J0aW9uIDAuMzE1IDAuMTI3IDAuMDc3IDAuMDY1IDAuMDYyIDAuMDc3IDAuMTE5IDAuMDk2IDAuMDI3IDAuMDIzIDAuMDA0IDAuMDA4XG4tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLVxuIn0= -->
-<pre><code>mcd 
-
- 24  Variables      260  Observations
------------------------------------------------------------------------------------------------------------------
-Category 
-       n  missing distinct 
-     260        0        9 
-                                                                                                         
-Value             Beef &amp; Pork          Beverages          Breakfast     Chicken &amp; Fish       Coffee &amp; Tea
-Frequency                  15                 27                 42                 27                 95
-Proportion              0.058              0.104              0.162              0.104              0.365
-                                                                                      
-Value                Desserts             Salads Smoothies &amp; Shakes     Snacks &amp; Sides
-Frequency                   7                  6                 28                 13
-Proportion              0.027              0.023              0.108              0.050
------------------------------------------------------------------------------------------------------------------
-Item 
-       n  missing distinct 
-     260        0      260 
-
-lowest : 1% Low Fat Milk Jug           Apple Slices                  Bacon Buffalo Ranch McChicken Bacon Cheddar McChicken       Bacon Clubhouse Burger       
-highest: Sweet Tea (Medium)            Sweet Tea (Small)             Vanilla Shake (Large)         Vanilla Shake (Medium)        Vanilla Shake (Small)        
------------------------------------------------------------------------------------------------------------------
-Serving.Size 
-       n  missing distinct 
-     260        0      107 
-
-lowest : 1 carton (236 ml) 1 cookie (33 g)   1 oz (29 g)       1.2 oz (34 g)     1.3 oz (38 g)    
-highest: 9 oz (255 g)      9.5 oz (269 g)    9.5 oz (270 g)    9.6 oz (251 g)    9.6 oz (272 g)   
------------------------------------------------------------------------------------------------------------------
-Calories 
-       n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90 
-     260        0       78    0.999    368.3    255.8        0      109      210      340      500      670 
-     .95 
-     762 
-
-lowest :    0   15   20   45   80, highest:  990 1050 1090 1150 1880
------------------------------------------------------------------------------------------------------------------
-Calories.from.Fat 
-       n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90 
-     260        0       48     0.99    127.1    131.1        0        0       20      100      200      280 
-     .95 
-     330 
-
-lowest :    0    5   10   20   30, highest:  470  510  530  540 1060
------------------------------------------------------------------------------------------------------------------
-Total.Fat 
-       n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90 
-     260        0       52    0.993    14.17    14.56    0.000    0.000    2.375   11.000   22.250   31.000 
-     .95 
-  37.000 
-
-lowest :   0.0   0.5   1.0   1.5   2.0, highest:  52.0  56.0  59.0  60.0 118.0
------------------------------------------------------------------------------------------------------------------
-Total.Fat....Daily.Value. 
-       n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90 
-     260        0       63    0.993    21.82    22.42     0.00     0.00     3.75    17.00    35.00    48.00 
-     .95 
-   57.00 
-
-lowest :   0   1   2   3   4, highest:  80  87  91  93 182
------------------------------------------------------------------------------------------------------------------
-Saturated.Fat 
-       n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90 
-     260        0       26    0.986    6.008    5.961        0        0        1        5       10       14 
-     .95 
-      16 
-
-lowest :  0.0  0.5  1.0  1.5  2.0, highest: 16.0 17.0 18.0 19.0 20.0
------------------------------------------------------------------------------------------------------------------
-Saturated.Fat....Daily.Value. 
-       n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90 
-     260        0       74    0.987    29.97    29.81     0.00     0.00     4.75    24.00    48.00    71.00 
-     .95 
-   78.00 
-
-lowest :   0   3   4   5   6, highest:  90  96 100 101 102
------------------------------------------------------------------------------------------------------------------
-Trans.Fat 
-       n  missing distinct     Info     Mean      Gmd 
-     260        0        5    0.515   0.2038   0.3389 
-                                        
-Value        0.0   0.5   1.0   1.5   2.5
-Frequency    204    17    30     8     1
-Proportion 0.785 0.065 0.115 0.031 0.004
------------------------------------------------------------------------------------------------------------------
-Cholesterol 
-       n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90 
-     260        0       35    0.993    54.94     68.3        0        0        5       35       65       95 
-     .95 
-     250 
-
-lowest :   0   5  10  15  20, highest: 285 295 300 555 575
------------------------------------------------------------------------------------------------------------------
-Cholesterol....Daily.Value. 
-       n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90 
-     260        0       48    0.994    18.39    22.76     0.00     0.00     2.00    11.00    21.25    32.00 
-     .95 
-   83.05 
-
-lowest :   0   1   2   3   5, highest:  95  99 100 185 192
------------------------------------------------------------------------------------------------------------------
-Sodium 
-       n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90 
-     260        0      111        1    495.8    580.2      5.0     24.5    107.5    190.0    865.0   1322.0 
-     .95 
-  1511.5 
-
-lowest :    0    5   10   15   20, highest: 2150 2170 2260 2290 3600
------------------------------------------------------------------------------------------------------------------
-Sodium....Daily.Value. 
-       n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90 
-     260        0       65    0.998    20.68    24.17     0.00     1.00     4.75     8.00    36.25    55.10 
-     .95 
-   63.05 
-
-lowest :   0   1   2   3   4, highest:  90  91  94  95 150
------------------------------------------------------------------------------------------------------------------
-Carbohydrates 
-       n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90 
-     260        0       84    0.999    47.35    30.39      0.0     15.0     30.0     44.0     60.0     79.1 
-     .95 
-   110.0 
-
-lowest :   0   4   7   8   9, highest: 118 135 139 140 141
------------------------------------------------------------------------------------------------------------------
-Carbohydrates....Daily.Value. 
-       n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90 
-     260        0       40    0.998    15.78    10.13      0.0      5.0     10.0     15.0     20.0     26.1 
-     .95 
-    37.0 
-
-lowest :  0  1  2  3  4, highest: 38 39 45 46 47
------------------------------------------------------------------------------------------------------------------
-Dietary.Fiber 
-       n  missing distinct     Info     Mean      Gmd 
-     260        0        8    0.944    1.631    1.658 
-                                                          
-Value          0     1     2     3     4     5     6     7
-Frequency     69    80    44    38    15     6     4     4
-Proportion 0.265 0.308 0.169 0.146 0.058 0.023 0.015 0.015
------------------------------------------------------------------------------------------------------------------
-Dietary.Fiber....Daily.Value. 
-       n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90 
-     260        0       24    0.979    6.531    6.772        0        0        0        5       10       15 
-     .95 
-      19 
-
-lowest :  0  2  3  4  5, highest: 20 22 23 24 28
------------------------------------------------------------------------------------------------------------------
-Sugars 
-       n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90 
-     260        0       83    0.999    29.42    31.06     0.00     1.00     5.75    17.50    48.00    69.10 
-     .95 
-   85.15 
-
-lowest :   0   1   2   3   4, highest: 103 115 120 123 128
------------------------------------------------------------------------------------------------------------------
-Protein 
-       n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90 
-     260        0       42    0.997    13.34    12.12      0.0      0.0      4.0     12.0     19.0     28.1 
-     .95 
-    36.0 
-
-lowest :  0  1  2  3  4, highest: 39 40 44 48 87
------------------------------------------------------------------------------------------------------------------
-Vitamin.A....Daily.Value. 
-       n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90 
-     260        0       19    0.977    13.43    17.33        0        0        2        8       15       25 
-     .95 
-      60 
-                                                                                                                
-Value          0     2     4     6     8    10    15    20    25    30    40    45    50    60    70   100   110
-Frequency     62    18    25    15    15    40    40    17     6     5     1     1     1     7     1     1     1
-Proportion 0.238 0.069 0.096 0.058 0.058 0.154 0.154 0.065 0.023 0.019 0.004 0.004 0.004 0.027 0.004 0.004 0.004
-                      
-Value        160   170
-Frequency      1     3
-Proportion 0.004 0.012
------------------------------------------------------------------------------------------------------------------
-Vitamin.C....Daily.Value. 
-       n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90 
-     260        0       17    0.756    8.535    14.88        0        0        0        0        4       25 
-     .95 
-      30 
-                                                                                                                
-Value          0     2     4     6     8    10    15    20    25    30    35    45    70   100   130   160   240
-Frequency    162    31     6     1     9     5    12     7     8     8     1     2     1     1     3     2     1
-Proportion 0.623 0.119 0.023 0.004 0.035 0.019 0.046 0.027 0.031 0.031 0.004 0.008 0.004 0.004 0.012 0.008 0.004
------------------------------------------------------------------------------------------------------------------
-Calcium....Daily.Value. 
-       n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90 
-     260        0       16    0.992    20.97    19.17        0        0        6       20       30       50 
-     .95 
-      50 
-                                                                                                          
-Value          0     2     4     6     8    10    15    20    25    30    35    40    45    50    60    70
-Frequency     36    10    14     6    17    18    25    20    22    33    10    17     4    20     6     2
-Proportion 0.138 0.038 0.054 0.023 0.065 0.069 0.096 0.077 0.085 0.127 0.038 0.065 0.015 0.077 0.023 0.008
------------------------------------------------------------------------------------------------------------------
-Iron....Daily.Value. 
-       n  missing distinct     Info     Mean      Gmd      .05      .10      .25      .50      .75      .90 
-     260        0       12    0.963    7.735    9.203        0        0        0        4       15       20 
-     .95 
-      25 
-                                                                                  
-Value          0     2     4     6     8    10    15    20    25    30    35    40
-Frequency     82    33    20    17    16    20    31    25     7     6     1     2
-Proportion 0.315 0.127 0.077 0.065 0.062 0.077 0.119 0.096 0.027 0.023 0.004 0.008
------------------------------------------------------------------------------------------------------------------</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICDDry4uICAgICAgICAgQ2Fsb3JpZXMgICAgICAgIEZhdC4uZy4gICAgICAgIENhcmIuLi5nLiAgICAgICBGaWJlci4uZy4gICAgXG4gOC1HcmFpbiBSb2xsICAgICAgICAgICAgICAgICAgICAgICAgOiAgMSAgIE1pbi4gICA6IDkwLjAgICBNaW4uICAgOiAwLjAwICAgTWluLiAgIDogNS4wMCAgIE1pbi4gICA6IDAuMDAgIFxuIEFsbW9uZCBDcm9pc3NhbnQgICAgICAgICAgICAgICAgICAgIDogIDEgICAxc3QgUXUuOjI4MC4wICAgMXN0IFF1LjogOS4wMCAgIDFzdCBRdS46MzEuMDAgICAxc3QgUXUuOiAxLjAwICBcbiBBbmNobyBDaGlwb3RsZSBDaGlja2VuIFBhbmluaSAgICAgICA6ICAxICAgTWVkaWFuIDozNjAuMCAgIE1lZGlhbiA6MTcuMDAgICBNZWRpYW4gOjQyLjAwICAgTWVkaWFuIDogMi4wMCAgXG4gQXBwbGUgRnJpdHRlciAgICAgICAgICAgICAgICAgICAgICAgOiAgMSAgIE1lYW4gICA6MzU2LjYgICBNZWFuICAgOjE2LjM1ICAgTWVhbiAgIDo0MS40OSAgIE1lYW4gICA6IDIuODUgIFxuIEJhY29uIEdvdWRhICYgRWdnIEJyZWFrZmFzdCBTYW5kd2ljaDogIDEgICAzcmQgUXUuOjQ1MC4wICAgM3JkIFF1LjoyMy4wMCAgIDNyZCBRdS46NTMuMDAgICAzcmQgUXUuOiAzLjAwICBcbiBCYW5hbmEgTnV0IEJyZWFkICAgICAgICAgICAgICAgICAgICA6ICAxICAgTWF4LiAgIDo2NTAuMCAgIE1heC4gICA6MzcuMDAgICBNYXguICAgOjgwLjAwICAgTWF4LiAgIDoyMS4wMCAgXG4gKE90aGVyKSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgOjEwNyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuICBQcm90ZWluLi5nLiAgIFxuIE1pbi4gICA6IDEuMDAgIFxuIDFzdCBRdS46IDUuMDAgIFxuIE1lZGlhbiA6IDguMDAgIFxuIE1lYW4gICA6MTEuNDcgIFxuIDNyZCBRdS46MTkuMDAgIFxuIE1heC4gICA6MzQuMDAgIFxuICAgICAgICAgICAgICAgIFxuIn0= -->
+<pre><code>                                   ï..         Calories        Fat..g.        Carb...g.       Fiber..g.    
+ 8-Grain Roll                        :  1   Min.   : 90.0   Min.   : 0.00   Min.   : 5.00   Min.   : 0.00  
+ Almond Croissant                    :  1   1st Qu.:280.0   1st Qu.: 9.00   1st Qu.:31.00   1st Qu.: 1.00  
+ Ancho Chipotle Chicken Panini       :  1   Median :360.0   Median :17.00   Median :42.00   Median : 2.00  
+ Apple Fritter                       :  1   Mean   :356.6   Mean   :16.35   Mean   :41.49   Mean   : 2.85  
+ Bacon Gouda &amp; Egg Breakfast Sandwich:  1   3rd Qu.:450.0   3rd Qu.:23.00   3rd Qu.:53.00   3rd Qu.: 3.00  
+ Banana Nut Bread                    :  1   Max.   :650.0   Max.   :37.00   Max.   :80.00   Max.   :21.00  
+ (Other)                             :107                                                                  
+  Protein..g.   
+ Min.   : 1.00  
+ 1st Qu.: 5.00  
+ Median : 8.00  
+ Mean   :11.47  
+ 3rd Qu.:19.00  
+ Max.   :34.00  
+                </code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3VtbWFyeShzYnV4X2QpXG5gYGAifQ== -->
+<pre class="r"><code>summary(sbux_d)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgWCAgICAgICAgIENhbG9yaWVzICAgICBGYXQuLmcuICAgICBDYXJiLi4uZy4gICAgRmliZXIuLmcuIFxuIEljZWQgQ29mZmVlICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDogMiAgIDE0MCAgICA6MTMgICAwICAgICAgOjU0ICAgMzUgICAgIDoxMSAgIDAgICAgICA6ODAgIFxuIEljZWQgRXNwcmVzc28gQ2xhc3NpY3MgLSBDYWZmZSBNb2NoYSAgICAgIDogMiAgIDUgICAgICA6IDcgICAyLjUgICAgOiA5ICAgMCAgICAgIDoxMCAgIDEgICAgICA6IDMgIFxuIEljZWQgRXNwcmVzc28gQ2xhc3NpY3MgLSBDYXJhbWVsIE1hY2NoaWF0bzogMiAgIDYwICAgICA6IDcgICA2ICAgICAgOiA2ICAgMTUgICAgIDogNSAgIDIgICAgICA6IDMgIFxuIEljZWQgRXNwcmVzc28gQ2xhc3NpY3MgLSBWYW5pbGxhIExhdHRlICAgIDogMiAgIDE1MCAgICA6IDYgICA3ICAgICAgOiA2ICAgMTcgICAgIDogNCAgIDQgICAgICA6IDMgIFxuIExhdHRlIE1hY2NoaWF0byAgICAgICAgICAgICAgICAgICAgICAgICAgIDogMiAgIDEyMCAgICA6IDUgICA0ICAgICAgOiAzICAgMTkgICAgIDogNCAgIDUgICAgICA6IDEgIFxuIFRhem/DgsKuIEJvdHRsZWQgQmVycnkgQmxvc3NvbSBXaGl0ZSAgICAgICAgOiAyICAgMTMwICAgIDogNSAgIDkgICAgICA6IDMgICAyMSAgICAgOiA0ICAgNyAgICAgIDogMSAgXG4gKE90aGVyKSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgOjgwICAgKE90aGVyKTo0OSAgIChPdGhlcik6MTEgICAoT3RoZXIpOjU0ICAgKE90aGVyKTogMSAgXG4gICAgUHJvdGVpbiAgICAgICBTb2RpdW0gIFxuIDAgICAgICA6NDUgICAxMCAgICAgOjI4ICBcbiAxICAgICAgOjEwICAgMCAgICAgIDoxMSAgXG4gMTIgICAgIDogNiAgIDE1ICAgICA6IDkgIFxuIDUgICAgICA6IDYgICA1ICAgICAgOiA2ICBcbiAxMCAgICAgOiA1ICAgMTUwICAgIDogNCAgXG4gMjAgICAgIDogMyAgIDE2MCAgICA6IDQgIFxuIChPdGhlcik6MTcgICAoT3RoZXIpOjMwICBcbiJ9 -->
+<pre><code>                                          X         Calories     Fat..g.     Carb...g.    Fiber..g. 
+ Iced Coffee                               : 2   140    :13   0      :54   35     :11   0      :80  
+ Iced Espresso Classics - Caffe Mocha      : 2   5      : 7   2.5    : 9   0      :10   1      : 3  
+ Iced Espresso Classics - Caramel Macchiato: 2   60     : 7   6      : 6   15     : 5   2      : 3  
+ Iced Espresso Classics - Vanilla Latte    : 2   150    : 6   7      : 6   17     : 4   4      : 3  
+ Latte Macchiato                           : 2   120    : 5   4      : 3   19     : 4   5      : 1  
+ TazoÂ® Bottled Berry Blossom White        : 2   130    : 5   9      : 3   21     : 4   7      : 1  
+ (Other)                                   :80   (Other):49   (Other):11   (Other):54   (Other): 1  
+    Protein       Sodium  
+ 0      :45   10     :28  
+ 1      :10   0      :11  
+ 12     : 6   15     : 9  
+ 5      : 6   5      : 6  
+ 10     : 5   150    : 4  
+ 20     : 3   160    : 4  
+ (Other):17   (Other):30  </code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3VtbWFyeShzYnV4X2RlKVxuYGBgIn0= -->
+<pre class="r"><code>summary(sbux_de)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgICAgICAgICAgICAgICAgICBCZXZlcmFnZV9jYXRlZ29yeSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBCZXZlcmFnZSAgICAgICAgICAgICAgQmV2ZXJhZ2VfcHJlcFxuIENsYXNzaWMgRXNwcmVzc28gRHJpbmtzICAgICA6NTggICAgICBDYWZmw4PCqCBMYXR0ZSAgICAgICAgICAgICAgICAgICAgICAgICA6IDEyICAgU295bWlsayAgICAgICAgICAgOjY2ICAgXG4gVGF6b8OCwq4gVGVhIERyaW5rcyAgICAgICAgICAgOjUyICAgICAgQ2FmZsODwqggTW9jaGEgKFdpdGhvdXQgV2hpcHBlZCBDcmVhbSkgOiAxMiAgIDIlIE1pbGsgICAgICAgICAgIDo1MCAgIFxuIFNpZ25hdHVyZSBFc3ByZXNzbyBEcmlua3MgICA6NDAgICAgICBDYXBwdWNjaW5vICAgICAgICAgICAgICAgICAgICAgICAgICAgOiAxMiAgIEdyYW5kZSBOb25mYXQgTWlsazoyNiAgIFxuIEZyYXBwdWNjaW5vw4LCriBCbGVuZGVkIENvZmZlZTozNiAgICAgIENhcmFtZWwgTWFjY2hpYXRvICAgICAgICAgICAgICAgICAgICA6IDEyICAgVGFsbCBOb25mYXQgTWlsayAgOjIzICAgXG4gU2hha2VuIEljZWQgQmV2ZXJhZ2VzICAgICAgIDoxOCAgICAgIENvZmZlZSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA6IDEyICAgVmVudGkgTm9uZmF0IE1pbGsgOjIyICAgXG4gRnJhcHB1Y2Npbm/DgsKuIEJsZW5kZWQgQ3LDg8KobWU6MTMgICAgICBIb3QgQ2hvY29sYXRlIChXaXRob3V0IFdoaXBwZWQgQ3JlYW0pOiAxMiAgIFdob2xlIE1pbGsgICAgICAgIDoxNiAgIFxuIChPdGhlcikgICAgICAgICAgICAgICAgICAgICA6MjUgICAgICAoT3RoZXIpICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgOjE3MCAgIChPdGhlcikgICAgICAgICAgIDozOSAgIFxuICAgIENhbG9yaWVzICAgICBUb3RhbC5GYXQuLmcuIFRyYW5zLkZhdC4uZy4gICBTYXR1cmF0ZWQuRmF0Li5nLiAgU29kaXVtLi5tZy4gICAgIFRvdGFsLkNhcmJvaHlkcmF0ZXMuLmcuXG4gTWluLiAgIDogIDAuMCAgIDAuMSAgICA6IDM0ICAgTWluLiAgIDowLjAwMCAgIE1pbi4gICA6MC4wMDAwICAgIE1pbi4gICA6IDAuMDAwICAgTWluLiAgIDogIDAuMCAgICAgICAgICBcbiAxc3QgUXUuOjEyMC4wICAgMCAgICAgIDogMjEgICAxc3QgUXUuOjAuMTAwICAgMXN0IFF1LjowLjAwMDAgICAgMXN0IFF1LjogMC4wMDAgICAxc3QgUXUuOiA3MC4wICAgICAgICAgIFxuIE1lZGlhbiA6MTg1LjAgICAxLjUgICAgOiAxNiAgIE1lZGlhbiA6MC41MDAgICBNZWRpYW4gOjAuMDAwMCAgICBNZWRpYW4gOiA1LjAwMCAgIE1lZGlhbiA6MTI1LjAgICAgICAgICAgXG4gTWVhbiAgIDoxOTMuOSAgIDMgICAgICA6IDE1ICAgTWVhbiAgIDoxLjMwNyAgIE1lYW4gICA6MC4wMzc2ICAgIE1lYW4gICA6IDYuMzY0ICAgTWVhbiAgIDoxMjguOSAgICAgICAgICBcbiAzcmQgUXUuOjI2MC4wICAgNSAgICAgIDogMTUgICAzcmQgUXUuOjIuMDAwICAgM3JkIFF1LjowLjEwMDAgICAgM3JkIFF1LjoxMC4wMDAgICAzcmQgUXUuOjE3MC4wICAgICAgICAgIFxuIE1heC4gICA6NTEwLjAgICAwLjIgICAgOiAxNCAgIE1heC4gICA6OS4wMDAgICBNYXguICAgOjAuMzAwMCAgICBNYXguICAgOjQwLjAwMCAgIE1heC4gICA6MzQwLjAgICAgICAgICAgXG4gICAgICAgICAgICAgICAgIChPdGhlcik6MTI3ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcbiBDaG9sZXN0ZXJvbC4ubWcuIERpZXRhcnkuRmlicmUuLmcuICAgU3VnYXJzLi5nLiAgICAgUHJvdGVpbi4uZy4gICAgIFZpdGFtaW4uQS4uLi5EVi4gVml0YW1pbi5DLi4uLkRWLlxuIE1pbi4gICA6IDAuMDAgICAgTWluLiAgIDowLjAwMDAgICAgTWluLiAgIDogMC4wMCAgIE1pbi4gICA6IDAuMDAwICAgMTAlICAgIDo0MyAgICAgICAwJSAgICAgOjE4OCAgICAgXG4gMXN0IFF1LjoyMS4wMCAgICAxc3QgUXUuOjAuMDAwMCAgICAxc3QgUXUuOjE4LjAwICAgMXN0IFF1LjogMy4wMDAgICA0JSAgICAgOjM3ICAgICAgIDIlICAgICA6IDIwICAgICBcbiBNZWRpYW4gOjM0LjAwICAgIE1lZGlhbiA6MC4wMDAwICAgIE1lZGlhbiA6MzIuMDAgICBNZWRpYW4gOiA2LjAwMCAgIDYlICAgICA6MzcgICAgICAgMTUlICAgIDogIDcgICAgIFxuIE1lYW4gICA6MzUuOTkgICAgTWVhbiAgIDowLjgwNTggICAgTWVhbiAgIDozMi45NiAgIE1lYW4gICA6IDYuOTc5ICAgMTUlICAgIDozNiAgICAgICA2JSAgICAgOiAgNyAgICAgXG4gM3JkIFF1Ljo1MC43NSAgICAzcmQgUXUuOjEuMDAwMCAgICAzcmQgUXUuOjQzLjc1ICAgM3JkIFF1LjoxMC4wMDAgICAwJSAgICAgOjI3ICAgICAgIDEwJSAgICA6ICA0ICAgICBcbiBNYXguICAgOjkwLjAwICAgIE1heC4gICA6OC4wMDAwICAgIE1heC4gICA6ODQuMDAgICBNYXguICAgOjIwLjAwMCAgIDglICAgICA6MjMgICAgICAgMjAlICAgIDogIDQgICAgIFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKE90aGVyKTozOSAgICAgICAoT3RoZXIpOiAxMiAgICAgXG4gQ2FsY2l1bS4uLi5EVi4gIElyb24uLi4uRFYuIENhZmZlaW5lLi5tZy5cbiAxMCUgICAgOjUxICAgICAwJSAgICAgOjk5ICAgNzUgICAgIDozNyAgIFxuIDIwJSAgICA6MzUgICAgIDIlICAgICA6MjAgICAwICAgICAgOjM1ICAgXG4gMTUlICAgIDoyNCAgICAgMTAlICAgIDoxNyAgIDE1MCAgICA6MzQgICBcbiAwJSAgICAgOjIzICAgICAyMCUgICAgOjE2ICAgNzAgICAgIDoxNCAgIFxuIDI1JSAgICA6MjEgICAgIDglICAgICA6MTUgICB2YXJpZXMgOjEyICAgXG4gMzAlICAgIDoyMSAgICAgNiUgICAgIDoxNCAgIDk1ICAgICA6MTEgICBcbiAoT3RoZXIpOjY3ICAgICAoT3RoZXIpOjYxICAgKE90aGVyKTo5OSAgIFxuIn0= -->
+<pre><code>                    Beverage_category                                  Beverage              Beverage_prep
+ Classic Espresso Drinks     :58      CaffÃ¨ Latte                         : 12   Soymilk           :66   
+ TazoÂ® Tea Drinks           :52      CaffÃ¨ Mocha (Without Whipped Cream) : 12   2% Milk           :50   
+ Signature Espresso Drinks   :40      Cappuccino                           : 12   Grande Nonfat Milk:26   
+ FrappuccinoÂ® Blended Coffee:36      Caramel Macchiato                    : 12   Tall Nonfat Milk  :23   
+ Shaken Iced Beverages       :18      Coffee                               : 12   Venti Nonfat Milk :22   
+ FrappuccinoÂ® Blended CrÃ¨me:13      Hot Chocolate (Without Whipped Cream): 12   Whole Milk        :16   
+ (Other)                     :25      (Other)                              :170   (Other)           :39   
+    Calories     Total.Fat..g. Trans.Fat..g.   Saturated.Fat..g.  Sodium..mg.     Total.Carbohydrates..g.
+ Min.   :  0.0   0.1    : 34   Min.   :0.000   Min.   :0.0000    Min.   : 0.000   Min.   :  0.0          
+ 1st Qu.:120.0   0      : 21   1st Qu.:0.100   1st Qu.:0.0000    1st Qu.: 0.000   1st Qu.: 70.0          
+ Median :185.0   1.5    : 16   Median :0.500   Median :0.0000    Median : 5.000   Median :125.0          
+ Mean   :193.9   3      : 15   Mean   :1.307   Mean   :0.0376    Mean   : 6.364   Mean   :128.9          
+ 3rd Qu.:260.0   5      : 15   3rd Qu.:2.000   3rd Qu.:0.1000    3rd Qu.:10.000   3rd Qu.:170.0          
+ Max.   :510.0   0.2    : 14   Max.   :9.000   Max.   :0.3000    Max.   :40.000   Max.   :340.0          
+                 (Other):127                                                                             
+ Cholesterol..mg. Dietary.Fibre..g.   Sugars..g.     Protein..g.     Vitamin.A....DV. Vitamin.C....DV.
+ Min.   : 0.00    Min.   :0.0000    Min.   : 0.00   Min.   : 0.000   10%    :43       0%     :188     
+ 1st Qu.:21.00    1st Qu.:0.0000    1st Qu.:18.00   1st Qu.: 3.000   4%     :37       2%     : 20     
+ Median :34.00    Median :0.0000    Median :32.00   Median : 6.000   6%     :37       15%    :  7     
+ Mean   :35.99    Mean   :0.8058    Mean   :32.96   Mean   : 6.979   15%    :36       6%     :  7     
+ 3rd Qu.:50.75    3rd Qu.:1.0000    3rd Qu.:43.75   3rd Qu.:10.000   0%     :27       10%    :  4     
+ Max.   :90.00    Max.   :8.0000    Max.   :84.00   Max.   :20.000   8%     :23       20%    :  4     
+                                                                     (Other):39       (Other): 12     
+ Calcium....DV.  Iron....DV. Caffeine..mg.
+ 10%    :51     0%     :99   75     :37   
+ 20%    :35     2%     :20   0      :35   
+ 15%    :24     10%    :17   150    :34   
+ 0%     :23     20%    :16   70     :14   
+ 25%    :21     8%     :15   varies :12   
+ 30%    :21     6%     :14   95     :11   
+ (Other):67     (Other):61   (Other):99   </code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI0hpc3RvZ3JhbSAtIGV4cGxvcmluZyBjYWxvcmllcywgY2hhbmdlIGJpbndpZHRoIGFuZCBzY2FsZVxub3B0aW9ucyhyZXByLnBsb3QuaGVpZ2h0PTMsIHJlcHIucGxvdC53aWR0aD02KVxuZ2dwbG90KGNsZWFuZWRfbWNkLCBhZXMoeCA9IENhbG9yaWVzKSkgK1xuICBnZW9tX2hpc3RvZ3JhbShhZXMoeSA9IC4uZGVuc2l0eS4uKSwgZmlsbCA9IFwibGlnaHRibHVlXCIsIGJpbndpZHRoID0gNDAsIGNvbG9yID0gXCJkYXJrZ3JheVwiKSArIFxuICBzY2FsZV94X2NvbnRpbnVvdXMoYnJlYWtzID0gc2VxKG1pbihjbGVhbmVkX21jZCRDYWxvcmllcyksIG1heChjbGVhbmVkX21jZCRDYWxvcmllcyksIGJ5ID0gMjAwKSkgKyBcbiAgZ2VvbV9kZW5zaXR5KClcbmBgYCJ9 -->
+<pre class="r"><code>#Histogram - exploring calories, change binwidth and scale
+options(repr.plot.height=3, repr.plot.width=6)
+ggplot(cleaned_mcd, aes(x = Calories)) +
+  geom_histogram(aes(y = ..density..), fill = &quot;lightblue&quot;, binwidth = 40, color = &quot;darkgray&quot;) + 
+  scale_x_continuous(breaks = seq(min(cleaned_mcd$Calories), max(cleaned_mcd$Calories), by = 200)) + 
+  geom_density()</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-plot-begin eyJjb25kaXRpb25zIjpbXSwiaGVpZ2h0Ijo0MzIuNjMyOSwic2l6ZV9iZWhhdmlvciI6MCwid2lkdGgiOjcwMH0= -->
+<p><img src="data:image/png;base64,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" /></p>
+<!-- rnb-plot-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxub3B0aW9ucyhyZXByLnBsb3QuaGVpZ2h0PTMsIHJlcHIucGxvdC53aWR0aD02KVxuZ2dwbG90KGNsZWFuZWRfbWNkLCBhZXMoeCA9IHJlb3JkZXIoQ2F0ZWdvcnksIENhbG9yaWVzKSwgeSA9IENhbG9yaWVzKSkgK1xuICBnZW9tX2JveHBsb3QoKSArXG4gIGNvb3JkX2ZsaXAoKSArXG4gIGxhYnMoeCA9IE5VTEwpXG5gYGAifQ== -->
+<pre class="r"><code>options(repr.plot.height=3, repr.plot.width=6)
+ggplot(cleaned_mcd, aes(x = reorder(Category, Calories), y = Calories)) +
+  geom_boxplot() +
+  coord_flip() +
+  labs(x = NULL)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-plot-begin eyJjb25kaXRpb25zIjpbXSwiaGVpZ2h0Ijo0MzIuNjMyOSwic2l6ZV9iZWhhdmlvciI6MCwid2lkdGgiOjcwMH0= -->
+<p><img src="data:image/png;base64,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" /></p>
+<!-- rnb-plot-end -->
+<!-- rnb-chunk-end -->
+</div>
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlNUQVQgMzgwIEZpbmFsIFJvamVjdCINCnN1YnRpdGxlOiAiU3ByaW5nIDIwMTkiDQphdXRob3I6ICJTQU5DSElUIEdPRUwiDQpkYXRlOiAiRHVlOiAwNC8zMC8yMDE5IDExOjU5UE0iDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQojIEZyb250IG1hdHRlcg0KYGBge3J9DQojIGFsd2F5cyBjbGVhbiB1cCBSIGVudmlyb25tZW50DQpybShsaXN0ID0gbHMoKSkNCg0KIyBsb2FkIGFsbCBwYWNrYWdlcyBoZXJlDQpsaWJyYXJ5KGRwbHlyKQ0KbGlicmFyeSh0aWR5cikNCmxpYnJhcnkoZ2dwbG90MikNCg0KIyBzZXQgUk5HIHNlZWQgKGRvbid0IGNoYW5nZSB0aGlzIGZvciB0aGUgbWlkdGVybSkNCnNldC5zZWVkKDgyMikNCmBgYA0KDQpgYGB7cn0NCm1jZCA8LSByZWFkLmNzdihmaWxlPSJudXRyaXRpb25fZmFjdHNfbWNkb25hbGRzX21lbnUuY3N2IiwgaGVhZGVyPVRSVUUsIHNlcD0iLCIpDQpzYnV4X2YgPC0gcmVhZC5jc3YoZmlsZT0ibnV0cml0aW9uX2ZhY3RzX3N0YXJidWNrc19mb29kX21lbnUuY3N2IiwgaGVhZGVyPVRSVUUsIHNlcD0iLCIpDQpzYnV4X2QgPC0gcmVhZC5jc3YoZmlsZT0ibnV0cml0aW9uX2ZhY3RzX3N0YXJidWNrc19kcmlua19tZW51LmNzdiIsIGhlYWRlcj1UUlVFLCBzZXA9IiwiKQ0KYGBgDQoNCmBgYHtyfQ0Kc3VtbWFyeShtY2QpDQpgYGANCg0KYGBge3J9DQpsaWJyYXJ5KEhtaXNjKQ0KZGVzY3JpYmUobWNkKSANCmBgYA0KDQoNCmBgYHtyfQ0KDQpgYGANCg0K</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlNUQVQgMzgwIEZpbmFsIFJvamVjdCINCnN1YnRpdGxlOiAiU3ByaW5nIDIwMTkiDQphdXRob3I6ICJTQU5DSElUIEdPRUwiDQpkYXRlOiAiRHVlOiAwNC8zMC8yMDE5IDExOjU5UE0iDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQojIEZyb250IG1hdHRlcg0KYGBge3J9DQojIGFsd2F5cyBjbGVhbiB1cCBSIGVudmlyb25tZW50DQpybShsaXN0ID0gbHMoKSkNCg0KIyBsb2FkIGFsbCBwYWNrYWdlcyBoZXJlDQpsaWJyYXJ5KGRwbHlyKQ0KbGlicmFyeSh0aWR5cikNCmxpYnJhcnkoZ2dwbG90MikNCmxpYnJhcnkoY2FyZXQpDQpsaWJyYXJ5KGdncGxvdDIpDQpsaWJyYXJ5KHJlYWRyKQ0KbGlicmFyeSh0aWR5dmVyc2UpDQpsaWJyYXJ5KGdndGhlbWVzKQ0KbGlicmFyeShzdHJpbmdyKQ0KbGlicmFyeShyZXByKQ0KbGlicmFyeShwbG90bHkpDQoNCmxpYnJhcnkoY2FUb29scykNCg0KIyBTZXR0aW5nIGEgcmFuZG9tIHNlZWQNCnNldC5zZWVkKDEpDQpgYGANCiMgTG9hZGluZyBhbmQgQ2xlYW5pbmcgdGhlIERhdGFzZXRzDQojIyMgTWNEb25hbGRzIERhdGFzZXQNCmBgYHtyfQ0KbWNkIDwtIHJlYWQuY3N2KGZpbGUgPSAibnV0cml0aW9uX2ZhY3RzX21jZG9uYWxkc19tZW51LmNzdiIsIGhlYWRlciA9IFRSVUUsIHNlcCA9ICIsIikNCm1jZFttY2QgPT0gJy0nXSA8LSBOQQ0KDQpwcmludChwYXN0ZTAoIlByZS1DbGVhbmluZyBSZWNvcmRzOiAiLCBucm93KG1jZCkpKQ0KDQojIERyb3BwaW5nIE5BIHZhbHVlcyByZWNvcmRzDQptY2QgPC0gbWNkICU+JQ0KICBkcm9wX25hKCkNCg0KcHJpbnQocGFzdGUwKCJDbGVhbmVkIFJlY29yZHM6ICIsIG5yb3cobWNkKSkpDQoNCiMgU3Vic2V0dGluZyBkcmlua3MgZnJvbSB0aGUgbWVudQ0KZHJpbmtzLm96IDwtIG1jZFtzdHJfZGV0ZWN0KG1jZCRTZXJ2aW5nLlNpemUsICIgZmwgb3ouKiIpLF0NCmRyaW5rcy5tbCA8LSBtY2Rbc3RyX2RldGVjdChtY2QkU2VydmluZy5TaXplLCAnY2FydG9uJyksXQ0KDQojIENvbnZlcnRpbmcgb3VuY2VzIHRvIG1pbGlsaXRlcnMgYW5kIGZ1cnRoZXIgcm91bmRpbmcgdGhlIHZhbHVlcw0KZHJpbmtzLm96JFNlcnZpbmcuU2l6ZSA8LSANCiAgcm91bmQoYXMubnVtZXJpYyhnc3ViKCIgZmwgb3ouKiIsICIiLCBkcmlua3Mub3okU2VydmluZy5TaXplKSkqMjkuNTczNSwgMCkNCmRyaW5rcy5tbCRTZXJ2aW5nLlNpemUgPC0gDQogIHJvdW5kKGFzLm51bWVyaWMoZ3N1YigiLipcXCgoLiopXFwgbWwpLioiLCAiXFwxIiwgZHJpbmtzLm1sJFNlcnZpbmcuU2l6ZSkpLCAwKQ0KDQojIEtlZXBpbmcgdGhlIHZhbHVlcyBhbmQgcmVtb3ZpbmcgY2hhcmFjdGVycw0KZm9vZC5nIDwtIG1jZFtzdHJfZGV0ZWN0KG1jZCRTZXJ2aW5nLlNpemUsICdnJyksXSANCmZvb2QuZyRTZXJ2aW5nLlNpemUgPC0gDQogIHJvdW5kKGFzLm51bWVyaWMoZ3N1YigiLipcXCgoLiopXFwgZykuKiIsICJcXDEiLCBmb29kLmckU2VydmluZy5TaXplKSksIDApDQoNCiMgQ29tYmluaW5nIGRyaW5rcyBhbmQgZm9vZCBtZW51DQojIFdoaWxlIGFkZGluZyBhIG5ldyBmZWF0dXJlIGZvciBkcmluayBvciBmb29kDQpjbGVhbmVkX21jZCA8LSByYmluZChkcmlua3Mub3osZHJpbmtzLm1sKQ0KY2xlYW5lZF9tY2QkVHlwZSA8LSByZXAoImRyaW5rcyIsIG5yb3coY2xlYW5lZF9tY2QpKQ0KZm9vZC5nJFR5cGUgPC0gcmVwKCJmb29kIiwgbnJvdyhmb29kLmcpKQ0KY2xlYW5lZF9tY2QgPC0gcmJpbmQoY2xlYW5lZF9tY2QsZm9vZC5nKQ0KDQpybSgiZHJpbmtzLm1sIiwgImRyaW5rcy5veiIsICJmb29kLmciKQ0KYGBgDQoNCiMjIyBTdGFyYnVja3MgRm9vZCBEYXRhc2V0DQpgYGB7cn0NCnNidXhfZiA8LSByZWFkLmNzdihmaWxlID0gIm51dHJpdGlvbl9mYWN0c19zdGFyYnVja3NfZm9vZF9tZW51LmNzdiIsIGhlYWRlciA9IFRSVUUsIHNlcCA9ICIsIikNCnNidXhfZltzYnV4X2YgPT0gJy0nXSA8LSBOQQ0KDQpwcmludChwYXN0ZTAoIlByZS1DbGVhbmluZyBSZWNvcmRzOiAiLCBucm93KHNidXhfZikpKQ0Kc2J1eF9mIDwtIHNidXhfZiAlPiUgDQogIGRyb3BfbmEoKQ0KDQpwcmludChwYXN0ZTAoIkNsZWFuZWQgUmVjb3JkczogIiwgbnJvdyhzYnV4X2YpKSkNCmBgYA0KDQojIyMgU3RhcmJ1Y2tzIERyaW5rIERhdGFzZXQNCmBgYHtyfQ0Kc2J1eF9kIDwtIHJlYWQuY3N2KGZpbGUgPSAibnV0cml0aW9uX2ZhY3RzX3N0YXJidWNrc19kcmlua19tZW51LmNzdiIsIGhlYWRlciA9IFRSVUUsIHNlcCA9ICIsIikNCnNidXhfZFtzYnV4X2QgPT0gJy0nXSA8LSBOQQ0KDQpwcmludChwYXN0ZTAoIlByZS1DbGVhbmluZyBSZWNvcmRzOiAiLCBucm93KHNidXhfZCkpKQ0Kc2J1eF9kIDwtIHNidXhfZCAlPiUgDQogIGRyb3BfbmEoKQ0KDQpwcmludChwYXN0ZTAoIkNsZWFuZWQgUmVjb3JkczogIiwgbnJvdyhzYnV4X2QpKSkNCmBgYA0KDQojIyMgU3RhcmJ1Y2tzIERyaW5rIEV4cG5hZGVkIERhdGFzZXQNCmBgYHtyfQ0Kc2J1eF9kZSA8LSByZWFkLmNzdihmaWxlID0gInN0YXJidWNrc19kcmlua19tZW51X2V4cGFuZGVkLmNzdiIsIGhlYWRlciA9IFRSVUUsIHNlcCA9ICIsIikNCnNidXhfZGVbc2J1eF9kZSA9PSAnLSddIDwtIE5BDQoNCnByaW50KHBhc3RlMCgiUHJlLUNsZWFuaW5nIFJlY29yZHM6ICIsIG5yb3coc2J1eF9kZSkpKQ0Kc2J1eF9kZSA8LSBzYnV4X2RlICU+JSANCiAgZHJvcF9uYSgpDQoNCnByaW50KHBhc3RlMCgiQ2xlYW5lZCBSZWNvcmRzOiAiLCBucm93KHNidXhfZGUpKSkNCmBgYA0KDQpgYGB7cn0NCnN1bW1hcnkobWNkKQ0KYGBgDQoNCmBgYHtyfQ0Kc3VtbWFyeShzYnV4X2YpDQpgYGANCg0KYGBge3J9DQpzdW1tYXJ5KHNidXhfZCkNCmBgYA0KDQoNCmBgYHtyfQ0Kc3VtbWFyeShzYnV4X2RlKQ0KYGBgDQoNCmBgYHtyfQ0KIyBDYWxvcmllcyBIaXN0b2dyYW0NCm9wdGlvbnMocmVwci5wbG90LmhlaWdodCA9IDMsIHJlcHIucGxvdC53aWR0aCA9IDYpDQpnZ3Bsb3QoY2xlYW5lZF9tY2QsIGFlcyh4ID0gQ2Fsb3JpZXMpKSArDQogIGdlb21faGlzdG9ncmFtKGFlcyh5ID0gLi5kZW5zaXR5Li4pLCBmaWxsID0gImxpZ2h0Ymx1ZSIsIGJpbndpZHRoID0gNDAsIGNvbG9yID0gImRhcmtncmF5IikgKyANCiAgc2NhbGVfeF9jb250aW51b3VzKGJyZWFrcyA9IHNlcShtaW4oY2xlYW5lZF9tY2QkQ2Fsb3JpZXMpLCBtYXgoY2xlYW5lZF9tY2QkQ2Fsb3JpZXMpLCBieSA9IDIwMCkpICsgDQogIGdlb21fZGVuc2l0eSgpDQpgYGANCg0KYGBge3J9DQojIENhbG9yaWVzIEJveFBsb3QNCm9wdGlvbnMocmVwci5wbG90LmhlaWdodCA9IDMsIHJlcHIucGxvdC53aWR0aCA9IDYpDQpnZ3Bsb3QoY2xlYW5lZF9tY2QsIGFlcyh4ID0gcmVvcmRlcihDYXRlZ29yeSwgQ2Fsb3JpZXMpLCB5ID0gQ2Fsb3JpZXMpKSArDQogIGdlb21fYm94cGxvdCgpICsNCiAgY29vcmRfZmxpcCgpICsNCiAgbGFicyh4ID0gTlVMTCkNCmBgYA==</div>
 
 
 
