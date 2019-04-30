@@ -31,7 +31,7 @@ set.seed(1)
 ```
 # Loading and Cleaning the Datasets
 ### McDonalds Dataset
-```{r}
+```{r echo = F}
 mcd <- read.csv(file = "nutrition_facts_mcdonalds_menu.csv", header = TRUE, sep = ",")
 mcd[mcd == '-'] <- NA
 
@@ -69,7 +69,7 @@ rm("drinks.ml", "drinks.oz", "food.g")
 ```
 
 ### Starbucks Food Dataset
-```{r}
+```{r echo = F}
 sbux_f <- read.csv(file = "nutrition_facts_starbucks_food_menu.csv", header = TRUE, sep = ",")
 sbux_f[sbux_f == '-'] <- NA
 
@@ -81,7 +81,7 @@ print(paste0("Cleaned Records: ", nrow(sbux_f)))
 ```
 
 ### Starbucks Drink Dataset
-```{r}
+```{r echo = F}
 sbux_d <- read.csv(file = "nutrition_facts_starbucks_drink_menu.csv", header = TRUE, sep = ",")
 sbux_d[sbux_d == '-'] <- NA
 
@@ -93,7 +93,7 @@ print(paste0("Cleaned Records: ", nrow(sbux_d)))
 ```
 
 ### Starbucks Drink Expnaded Dataset
-```{r}
+```{r echo = F}
 sbux_de <- read.csv(file = "starbucks_drink_menu_expanded.csv", header = TRUE, sep = ",")
 sbux_de[sbux_de == '-'] <- NA
 
@@ -104,25 +104,30 @@ sbux_de <- sbux_de %>%
 print(paste0("Cleaned Records: ", nrow(sbux_de)))
 ```
 
-```{r}
+### McDonalds Data Summary
+```{r echo = F}
 summary(mcd)
 ```
 
-```{r}
+### Starbucks Food Data Summary
+```{r echo = F}
 summary(sbux_f)
 ```
 
-```{r}
+### Starbucks Drink Data Summary
+```{r echo = F}
 summary(sbux_d)
 ```
 
-
-```{r}
+### Starbucks Drink Expanded Data Summary
+```{r echo = F}
 summary(sbux_de)
 ```
 
-```{r}
-# Calories Histogram
+
+## McDonalds:
+#### Calories Histogram
+```{r echo = F}
 options(repr.plot.height = 3, repr.plot.width = 6)
 ggplot(cleaned_mcd, aes(x = Calories)) +
   geom_histogram(aes(y = ..density..), fill = "lightblue", binwidth = 40, color = "darkgray") + 
@@ -130,11 +135,36 @@ ggplot(cleaned_mcd, aes(x = Calories)) +
   geom_density()
 ```
 
-```{r}
-# Calories BoxPlot
+#### Calories BoxPlot
+```{r echo = F}
 options(repr.plot.height = 3, repr.plot.width = 6)
 ggplot(cleaned_mcd, aes(x = reorder(Category, Calories), y = Calories)) +
   geom_boxplot() +
   coord_flip() +
   labs(x = NULL)
 ```
+
+```{r}
+# Splitting the dataset
+split <- sample.split(cleaned_mcd$Calories, SplitRatio = 0.80)
+train <- subset(cleaned_mcd, split == "TRUE")
+test <- subset(cleaned_mcd, split == "FALSE")
+```
+
+```{r}
+# Removing String Columns
+df <- train %>% select(-Category, -Item, -Type)
+
+# Setting Items as the outpput string type
+rownames(df) <- train$Item
+
+# Scaling the data and creating distance metrics using euclidean distance
+dd <- dist(scale(df), method = "euclidean")
+
+# Fitting hierarchical clustering
+hc <- hclust(dd, method = "ward.D2")
+
+# Plotting the results
+plot(hc, hang = -1, cex = .25, cex.main = 2)
+```
+
