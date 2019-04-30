@@ -217,7 +217,44 @@ food &lt;- read.csv('starbucks-menu-nutrition-food.csv')
 # as the data seems to contains some trademarks and accent, we will first remove them
 drinks_expanded$Beverage_category &lt;- iconv(drinks_expanded$Beverage_category, &quot;latin1&quot;, &quot;ASCII&quot;, sub = &quot;byte&quot;)
 drinks_expanded$Beverage &lt;- iconv(drinks_expanded$Beverage, &quot;latin1&quot;, &quot;ASCII&quot;, sub = &quot;byte&quot;)
-drinks_expanded$Beverage_prep &lt;- iconv(drinks_expanded$Beverage_prep, &quot;latin1&quot;, &quot;ASCII&quot;, sub = &quot;byte&quot;)</code></pre>
+drinks_expanded$Beverage_prep &lt;- iconv(drinks_expanded$Beverage_prep, &quot;latin1&quot;, &quot;ASCII&quot;, sub = &quot;byte&quot;)
+
+drinks_expanded$Beverage_category &lt;- gsub('(&lt;[a-z0-9]+&gt;)','',drinks_expanded$Beverage_category)
+drinks_expanded$Beverage &lt;- gsub('(&lt;[a-z0-9]+&gt;)','',drinks_expanded$Beverage)
+drinks_expanded$Beverage_prep &lt;- gsub('(&lt;[a-z0-9]+&gt;)','',drinks_expanded$Beverage_prep)</code></pre>
+<div id="quick-view-of-data" class="section level3">
+<h3>Quick view of Data</h3>
+<pre class="r"><code>head(food)</code></pre>
+<pre><code>##                                Food.name Calories Fat Carb Fiver Protein
+## 1                           Chonga Bagel      300   5   50     3      12
+## 2                           8-Grain Roll      380   6   70     7      10
+## 3                       Almond Croissant      410  22   45     3      10
+## 4                          Apple Fritter      460  23   56     2       7
+## 5                       Banana Nut Bread      420  22   52     2       6
+## 6 Blueberry Muffin with Yogurt and Honey      380  16   53     1       6</code></pre>
+<pre class="r"><code>head(drinks_expanded)</code></pre>
+<pre><code>##         Beverage_category      Beverage     Beverage_prep Calories
+## 1                  Coffee Brewed Coffee             Short        3
+## 2                  Coffee Brewed Coffee              Tall        4
+## 3                  Coffee Brewed Coffee            Grande        5
+## 4                  Coffee Brewed Coffee             Venti        5
+## 5 Classic Espresso Drinks    Caff Latte Short Nonfat Milk       70
+## 6 Classic Espresso Drinks    Caff Latte           2% Milk      100
+##   Total_Fat Trans_Fat Saturated_Fat Sodium Total_Carbohydrates Cholesterol
+## 1       0.1       0.0           0.0      0                   5           0
+## 2       0.1       0.0           0.0      0                  10           0
+## 3       0.1       0.0           0.0      0                  10           0
+## 4       0.1       0.0           0.0      0                  10           0
+## 5       0.1       0.1           0.0      5                  75          10
+## 6       3.5       2.0           0.1     15                  85          10
+##   Dietary_Fibre Sugars Protein Vitamin_A Vitamin_C Calcium Iron Caffeine
+## 1             0      0     0.3       0.0         0    0.00    0      175
+## 2             0      0     0.5       0.0         0    0.00    0      260
+## 3             0      0     1.0       0.0         0    0.00    0      330
+## 4             0      0     1.0       0.0         0    0.02    0      410
+## 5             0      9     6.0       0.1         0    0.20    0       75
+## 6             0      9     6.0       0.1         0    0.20    0       75</code></pre>
+</div>
 
 
 

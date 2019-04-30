@@ -31,4 +31,14 @@ food <- read.csv('starbucks-menu-nutrition-food.csv')
 drinks_expanded$Beverage_category <- iconv(drinks_expanded$Beverage_category, "latin1", "ASCII", sub = "byte")
 drinks_expanded$Beverage <- iconv(drinks_expanded$Beverage, "latin1", "ASCII", sub = "byte")
 drinks_expanded$Beverage_prep <- iconv(drinks_expanded$Beverage_prep, "latin1", "ASCII", sub = "byte")
+
+drinks_expanded$Beverage_category <- gsub('(<[a-z0-9]+>)','',drinks_expanded$Beverage_category)
+drinks_expanded$Beverage <- gsub('(<[a-z0-9]+>)','',drinks_expanded$Beverage)
+drinks_expanded$Beverage_prep <- gsub('(<[a-z0-9]+>)','',drinks_expanded$Beverage_prep)
+```
+
+### Quick view of Data
+```{r}
+head(food)
+head(drinks_expanded)
 ```
