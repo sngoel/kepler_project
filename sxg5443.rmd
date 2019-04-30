@@ -23,25 +23,34 @@ library(ggthemes)
 library(stringr)
 library(repr)
 library(plotly)
-
+library(corrplot)
 library(caTools)
 
 # Setting a random seed
 set.seed(1)
 ```
+
+```{r echo = F}
+# User Defined Function:
+replace_drop_na <- function(arg_1) {
+   arg_1[arg_1 == '-'] <- NA
+   print(paste0("Pre-Cleaning Records: ", nrow(arg_1)))
+
+  # Dropping NA values records
+  result <- arg_1 %>%
+  drop_na()
+
+  print(paste0("Cleaned Records: ", nrow(result)))
+  return(result)
+}
+```
+
+
 # Loading and Cleaning the Datasets
 ### McDonalds Dataset
 ```{r echo = F}
 mcd <- read.csv(file = "nutrition_facts_mcdonalds_menu.csv", header = TRUE, sep = ",")
-mcd[mcd == '-'] <- NA
-
-print(paste0("Pre-Cleaning Records: ", nrow(mcd)))
-
-# Dropping NA values records
-mcd <- mcd %>%
-  drop_na()
-
-print(paste0("Cleaned Records: ", nrow(mcd)))
+mcd <- replace_drop_na(mcd)
 
 # Subsetting drinks from the menu
 drinks.oz <- mcd[str_detect(mcd$Serving.Size, " fl oz.*"),]
@@ -71,37 +80,19 @@ rm("drinks.ml", "drinks.oz", "food.g")
 ### Starbucks Food Dataset
 ```{r echo = F}
 sbux_f <- read.csv(file = "nutrition_facts_starbucks_food_menu.csv", header = TRUE, sep = ",")
-sbux_f[sbux_f == '-'] <- NA
-
-print(paste0("Pre-Cleaning Records: ", nrow(sbux_f)))
-sbux_f <- sbux_f %>% 
-  drop_na()
-
-print(paste0("Cleaned Records: ", nrow(sbux_f)))
+sbux_f <- replace_drop_na(sbux_f)
 ```
 
 ### Starbucks Drink Dataset
 ```{r echo = F}
 sbux_d <- read.csv(file = "nutrition_facts_starbucks_drink_menu.csv", header = TRUE, sep = ",")
-sbux_d[sbux_d == '-'] <- NA
-
-print(paste0("Pre-Cleaning Records: ", nrow(sbux_d)))
-sbux_d <- sbux_d %>% 
-  drop_na()
-
-print(paste0("Cleaned Records: ", nrow(sbux_d)))
+sbux_d <- replace_drop_na(sbux_d)
 ```
 
 ### Starbucks Drink Expnaded Dataset
 ```{r echo = F}
 sbux_de <- read.csv(file = "starbucks_drink_menu_expanded.csv", header = TRUE, sep = ",")
-sbux_de[sbux_de == '-'] <- NA
-
-print(paste0("Pre-Cleaning Records: ", nrow(sbux_de)))
-sbux_de <- sbux_de %>% 
-  drop_na()
-
-print(paste0("Cleaned Records: ", nrow(sbux_de)))
+sbux_de <- replace_drop_na(sbux_de)
 ```
 
 ### McDonalds Data Summary
@@ -144,27 +135,48 @@ ggplot(cleaned_mcd, aes(x = reorder(Category, Calories), y = Calories)) +
   labs(x = NULL)
 ```
 
-```{r}
-# Splitting the dataset
-split <- sample.split(cleaned_mcd$Calories, SplitRatio = 0.80)
-train <- subset(cleaned_mcd, split == "TRUE")
-test <- subset(cleaned_mcd, split == "FALSE")
+#### Correlation Plot
+```{r echo = F}
+cr <- cor(cleaned_mcd[c(3, 4, 5, 6, 11, 13, 15, 17, 19, 20)])
+corrplot(cr, method = 'color')
+rm('cr')
 ```
 
-```{r}
-# Removing String Columns
-df <- train %>% select(-Category, -Item, -Type)
-
-# Setting Items as the outpput string type
-rownames(df) <- train$Item
-
-# Scaling the data and creating distance metrics using euclidean distance
-dd <- dist(scale(df), method = "euclidean")
-
-# Fitting hierarchical clustering
-hc <- hclust(dd, method = "ward.D2")
-
-# Plotting the results
-plot(hc, hang = -1, cex = .25, cex.main = 2)
+#### Calories Vs Total Fat Scatter Plot
+```{r echo = F}
+plot(cleaned_mcd$Total.Fat, cleaned_mcd$Calories, main = "Scatter Plot", xlab = "Total Fat", ylab = "Calories")
+abline(lm(cleaned_mcd$Calories~cleaned_mcd$Total.Fat))
 ```
 
+#### Colries vs Protein Density Map
+```{r echo = F}
+options(repr.plot.height = 4, repr.plot.width = 6)
+ggplot(cleaned_mcd, aes(y = Calories, x = Protein)) +
+  geom_jitter(size = 1) +
+  stat_density2d() +
+  geom_smooth(method = 'lm', colour = 2) +
+  facet_wrap( ~ Type, scales = "free_x") +
+  theme(panel.border = element_rect(colour = 1, fill = NA))
+```
+
+#### Colries vs Calories from Fat Density Map
+```{r echo = F}
+options(repr.plot.height = 4, repr.plot.width = 6)
+ggplot(cleaned_mcd, aes(y = Calories, x = Calories.from.Fat)) +
+  geom_jitter(size = 1) +
+  stat_density2d() +
+  geom_smooth(method = 'lm', colour = 2) +
+  facet_wrap( ~ Type, scales = "free_x") +
+  theme(panel.border = element_rect(colour = 1, fill = NA))
+```
+
+#### Colries vs Calories from Fat Density Map
+```{r echo = F}
+options(repr.plot.height = 4, repr.plot.width = 6)
+ggplot(cleaned_mcd, aes(y = Calories, x = Total.Fat)) +
+  geom_jitter(size = 1) +
+  stat_density2d() +
+  geom_smooth(method = 'lm', colour = 2) +
+  facet_wrap( ~ Type, scales = "free_x") +
+  theme(panel.border = element_rect(colour = 1, fill = NA))
+```
