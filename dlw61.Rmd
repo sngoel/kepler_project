@@ -42,3 +42,43 @@ drinks_expanded$Beverage_prep <- gsub('(<[a-z0-9]+>)','',drinks_expanded$Beverag
 head(food)
 head(drinks_expanded)
 ```
+
+### Plot Strar Bucks Food (Calories and Fat)
+```{r}
+# red line shows recomended meal amount of Calories for food
+# blue line shows MAX recomended daily amount of Fat for Food
+
+# https://www.uccs.edu/healthcircle/sites/healthcircle/files/inline-files/Meal%20Planning.pdf
+# https://my.clevelandclinic.org/health/articles/11208-fat-what-you-need-to-know
+
+plot(Calories~Fat, 
+     ylab = 'Calories in Starbucks Food', 
+     xlab = 'Fat in Starbucks Food',
+     main = 'Caleries vs Fat for Starbucks Food', 
+     data = food)
+abline(v=22,col='blue')
+abline(h=500,col='red')
+
+food %>%
+  select(Food.name,Calories,Fat) %>%
+  filter(Calories>=500,Fat>=22) %>% 
+  count(Food.name) %>% 
+  ungroup() %>% 
+  arrange(desc(n))
+
+# Unhealthiest Option
+food %>%
+  select(Food.name,Calories,Fat) %>%
+  filter(Calories>=600,Fat>=28) %>% 
+  count(Food.name) %>% 
+  ungroup() %>% 
+  arrange(desc(n))
+if(FALSE){
+"
+Green Goddess Avocado Salad			
+Lentils & Vegetable Protein Bowl with Brown Rice		
+Roasted Turkey & Dill Havarti Sandwich
+"
+}
+```
+
