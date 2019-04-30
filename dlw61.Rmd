@@ -82,3 +82,17 @@ Roasted Turkey & Dill Havarti Sandwich
 }
 ```
 
+### Plot Strar Bucks Drink (Calories and Total Fat)
+```{r}
+# red line shows recomended meal amount of Calories for food
+
+# https://www.uccs.edu/healthcircle/sites/healthcircle/files/inline-files/Meal%20Planning.pdf
+# https://my.clevelandclinic.org/health/articles/11208-fat-what-you-need-to-know
+
+plot(Calories~Total_Fat, 
+     ylab = 'Calories in Starbucks Drinks', 
+     xlab = 'Total Fat in Starbucks Food',
+     main = 'Caleries vs Total Fat for Starbucks Drinks', 
+     data = drinks_expanded)
+abline(h=500,col='red')
+```
