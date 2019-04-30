@@ -111,6 +111,56 @@ plot(Sugars~Total_Fat,
 abline(h=38,col='red')
 ```
 
+### Plot Strar Bucks Drink (Sugars and Caffine)
+```{r, warning=FALSE, message=FALSE}
+# Blue line Max recomendation of sugar
+# Red line Max recomendation of caffine
+
+# https://www.fda.gov/consumers/consumer-updates/spilling-beans-how-much-caffeine-too-much
+
+sudo<-drinks_expanded %>%
+  mutate(clean_caff=as.numeric(as.character(drinks_expanded$Caffeine)))
+sudo[is.na(sudo)]<-0
+
+plot(clean_caff~Sugars, 
+     ylab = 'Caffeine in Starbucks Drinks', 
+     xlab = 'Sugar in Starbucks Food',
+     main = 'Total Fat Vs Sugar for Starbucks Drinks', 
+     data = sudo)
+abline(h=400,col='red')
+abline(v=38,col='blue')
+
+#Venti Coffee
+sudo %>%
+  select(Beverage_category,clean_caff) %>%
+  filter(clean_caff>=400)
+
+sudo %>%
+  select(Beverage_category,Sugars) %>%
+  filter(Sugars>=38) %>% 
+  count(Beverage_category) %>% 
+  ungroup() %>% 
+  arrange(desc(n))
+
+sudo_sugar<-sudo %>%
+  select(Beverage_category,Sugars) %>%
+  filter(Sugars>=38) 
+
+# 37.60331% of drinks have higher than rated sugar
+length(sudo_sugar[,1])/length(drinks_expanded$Beverage_category)
+
+if(FALSE){
+"
+Worst drinks ordered by violation of sugar contents
+Frappuccino Blended Coffee				
+Signature Espresso Drinks				
+Tazo Tea Drinks  
+"
+}
+
+```
+
+
 
 
 
