@@ -160,7 +160,15 @@ Tazo Tea Drinks
 
 ```
 
+#### Checking for missing values
+It doesnt seems the data contains any missing values. However, Caffeine variable in the `Drinks Expanded` dataset seems to be a mixed of numeric and character. As it can be seen, there are values with value `varies` or `Varies` in the data. Removed them from the dataset and will format it into numeric variable.
 
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+summary(drinks_expanded)
+summary(food)
+drinks_expanded <- subset(drinks_expanded,!Caffeine %in% c('Varies','varies',''))
+drinks_expanded$Caffeine <- as.numeric(as.character(drinks_expanded$Caffeine))
+```
 
 
 

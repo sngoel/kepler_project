@@ -400,6 +400,66 @@ Signature Espresso Drinks
 Tazo Tea Drinks  
 &quot;
 }</code></pre>
+<div id="checking-for-missing-values" class="section level4">
+<h4>Checking for missing values</h4>
+<p>It doesnt seems the data contains any missing values. However, Caffeine variable in the <code>Drinks Expanded</code> dataset seems to be a mixed of numeric and character. As it can be seen, there are values with value <code>varies</code> or <code>Varies</code> in the data. Removed them from the dataset and will format it into numeric variable.</p>
+<pre><code>##  Beverage_category    Beverage         Beverage_prep         Calories    
+##  Length:242         Length:242         Length:242         Min.   :  0.0  
+##  Class :character   Class :character   Class :character   1st Qu.:120.0  
+##  Mode  :character   Mode  :character   Mode  :character   Median :185.0  
+##                                                           Mean   :193.9  
+##                                                           3rd Qu.:260.0  
+##                                                           Max.   :510.0  
+##                                                                          
+##    Total_Fat        Trans_Fat     Saturated_Fat        Sodium      
+##  Min.   : 0.000   Min.   :0.000   Min.   :0.0000   Min.   : 0.000  
+##  1st Qu.: 0.200   1st Qu.:0.100   1st Qu.:0.0000   1st Qu.: 0.000  
+##  Median : 2.500   Median :0.500   Median :0.0000   Median : 5.000  
+##  Mean   : 2.905   Mean   :1.307   Mean   :0.0376   Mean   : 6.364  
+##  3rd Qu.: 4.500   3rd Qu.:2.000   3rd Qu.:0.1000   3rd Qu.:10.000  
+##  Max.   :15.000   Max.   :9.000   Max.   :0.3000   Max.   :40.000  
+##                                                                    
+##  Total_Carbohydrates  Cholesterol    Dietary_Fibre        Sugars     
+##  Min.   :  0.0       Min.   : 0.00   Min.   :0.0000   Min.   : 0.00  
+##  1st Qu.: 70.0       1st Qu.:21.00   1st Qu.:0.0000   1st Qu.:18.00  
+##  Median :125.0       Median :34.00   Median :0.0000   Median :32.00  
+##  Mean   :128.9       Mean   :35.99   Mean   :0.8058   Mean   :32.96  
+##  3rd Qu.:170.0       3rd Qu.:50.75   3rd Qu.:1.0000   3rd Qu.:43.75  
+##  Max.   :340.0       Max.   :90.00   Max.   :8.0000   Max.   :84.00  
+##                                                                      
+##     Protein         Vitamin_A         Vitamin_C          Calcium      
+##  Min.   : 0.000   Min.   :0.00000   Min.   :0.00000   Min.   :0.0000  
+##  1st Qu.: 3.000   1st Qu.:0.04000   1st Qu.:0.00000   1st Qu.:0.1000  
+##  Median : 6.000   Median :0.08000   Median :0.00000   Median :0.2000  
+##  Mean   : 6.979   Mean   :0.09831   Mean   :0.03649   Mean   :0.2076  
+##  3rd Qu.:10.000   3rd Qu.:0.15000   3rd Qu.:0.00000   3rd Qu.:0.3000  
+##  Max.   :20.000   Max.   :0.50000   Max.   :1.00000   Max.   :0.6000  
+##                                                                       
+##       Iron            Caffeine 
+##  Min.   :0.00000   75     :37  
+##  1st Qu.:0.00000   0      :35  
+##  Median :0.02000   150    :34  
+##  Mean   :0.07446   70     :14  
+##  3rd Qu.:0.10000   varies :12  
+##  Max.   :0.50000   95     :11  
+##                    (Other):99</code></pre>
+<pre><code>##                                 Food.name      Calories    
+##  8-Grain Roll                        :  1   Min.   : 90.0  
+##  Almond Croissant                    :  1   1st Qu.:280.0  
+##  Ancho Chipotle Chicken Panini       :  1   Median :360.0  
+##  Apple Fritter                       :  1   Mean   :356.6  
+##  Bacon Gouda &amp; Egg Breakfast Sandwich:  1   3rd Qu.:450.0  
+##  Banana Nut Bread                    :  1   Max.   :650.0  
+##  (Other)                             :107                  
+##       Fat             Carb           Fiver          Protein     
+##  Min.   : 0.00   Min.   : 5.00   Min.   : 0.00   Min.   : 1.00  
+##  1st Qu.: 9.00   1st Qu.:31.00   1st Qu.: 1.00   1st Qu.: 5.00  
+##  Median :17.00   Median :42.00   Median : 2.00   Median : 8.00  
+##  Mean   :16.35   Mean   :41.49   Mean   : 2.85   Mean   :11.47  
+##  3rd Qu.:23.00   3rd Qu.:53.00   3rd Qu.: 3.00   3rd Qu.:19.00  
+##  Max.   :37.00   Max.   :80.00   Max.   :21.00   Max.   :34.00  
+## </code></pre>
+</div>
 </div>
 
 
