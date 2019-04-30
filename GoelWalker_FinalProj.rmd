@@ -33,7 +33,7 @@ library (reshape2)
 set.seed(380)
 ```
 
-```{r echo = F}
+```{r echo = TRUE}
 # User Defined Function:
 replace_drop_na <- function(arg_1) {
    arg_1[arg_1 == '-'] <- NA
@@ -181,12 +181,12 @@ joined_data <- rbind(cleaned_mcd, cleaned_sbux)
 ```
 
 ### McDonalds Data Summary
-```{r echo = F}
+```{r echo = TRUE}
 summary(cleaned_mcd)
 ```
 
 ### Starbucks Data Summary
-```{r echo = F}
+```{r echo = TRUE}
 summary(cleaned_sbux)
 ```
 
@@ -196,7 +196,7 @@ summary(drinks_expanded)
 ```
 
 ### Joined Data Summary
-```{r echo = F}
+```{r echo = TRUE}
 summary(joined_data)
 ```
 
@@ -208,7 +208,7 @@ rm('mcd', 'sbux_d', 'keeps', 'drinks.ml', 'drinks.oz', 'food.g')
 
 ## McDonalds:
 #### Calories Histogram
-```{r echo = F}
+```{r echo = TRUE}
 options(repr.plot.height = 3, repr.plot.width = 6)
 ggplot(cleaned_mcd, aes(x = Calories)) +
   geom_histogram(aes(y = ..density..), fill = "lightblue", binwidth = 40, color = "darkgray") + 
@@ -217,7 +217,7 @@ ggplot(cleaned_mcd, aes(x = Calories)) +
 ```
 
 #### Calories BoxPlot
-```{r echo = F}
+```{r echo = TRUE}
 options(repr.plot.height = 3, repr.plot.width = 6)
 ggplot(cleaned_mcd, aes(x = reorder(Type, Calories), y = Calories)) +
   geom_boxplot() +
@@ -226,20 +226,20 @@ ggplot(cleaned_mcd, aes(x = reorder(Type, Calories), y = Calories)) +
 ```
 
 #### Correlation Plot
-```{r echo = F}
+```{r echo = TRUE}
 cr <- cor(cleaned_mcd[, 2:6])
 corrplot(cr, method = 'color')
 rm('cr')
 ```
 
 #### Calories Vs Total Fat Scatter Plot
-```{r echo = F}
+```{r echo = TRUE}
 plot(cleaned_mcd$Total_Fat, cleaned_mcd$Calories, main = "Scatter Plot", xlab = "Total Fat", ylab = "Calories")
 abline(lm(cleaned_mcd$Calories ~ cleaned_mcd$Total_Fat))
 ```
 
 #### Colries vs Protein Density Map
-```{r echo = F}
+```{r echo = TRUE}
 options(repr.plot.height = 4, repr.plot.width = 6)
 ggplot(cleaned_mcd, aes(y = Calories, x = Protein)) +
   geom_jitter(size = 1) +
@@ -250,7 +250,7 @@ ggplot(cleaned_mcd, aes(y = Calories, x = Protein)) +
 ```
 
 #### Colries vs Calories from Fat Density Map
-```{r echo = F}
+```{r echo = TRUE}
 options(repr.plot.height = 4, repr.plot.width = 6)
 ggplot(cleaned_mcd, aes(y = Calories, x = Carbohydrates)) +
   geom_jitter(size = 1) +
@@ -261,7 +261,7 @@ ggplot(cleaned_mcd, aes(y = Calories, x = Carbohydrates)) +
 ```
 
 #### Colries vs Calories from Fat Density Map
-```{r echo = F}
+```{r echo = TRUE}
 options(repr.plot.height = 4, repr.plot.width = 6)
 ggplot(cleaned_mcd, aes(y = Calories, x = Total_Fat)) +
   geom_jitter(size = 1) +
@@ -286,12 +286,12 @@ summary(mcd_lm_model)
 ```
 
 #### Plots to explain the model
-```{r echo = F}
+```{r echo = TRUE}
 plot(mcd_lm_model, which = 1:4)
 ```
 
 #### Predictions vs Actual
-```{r echo = F}
+```{r echo = TRUE}
 predictions <- predict(mcd_lm_model, test)
 plot(test$Calories, type = "l", lty = 1.8, col = "blue")
 lines(predictions, type = "l", col = "red")
@@ -324,7 +324,7 @@ rm('predictions', 'real', 'conf_data', 'split', 'test', 'train')
 
 ## Starbucks:
 #### Calories Histogram
-```{r echo = F}
+```{r echo = TRUE}
 options(repr.plot.height = 3, repr.plot.width = 6)
 ggplot(cleaned_sbux, aes(x = Calories)) +
   geom_histogram(aes(y = ..density..), fill = "lightblue", binwidth = 40, color = "darkgray") + 
@@ -333,7 +333,7 @@ ggplot(cleaned_sbux, aes(x = Calories)) +
 ```
 
 #### Calories BoxPlot
-```{r echo = F}
+```{r echo = TRUE}
 options(repr.plot.height = 3, repr.plot.width = 6)
 ggplot(cleaned_sbux, aes(x = reorder(Type, Calories), y = Calories)) +
   geom_boxplot() +
@@ -342,20 +342,20 @@ ggplot(cleaned_sbux, aes(x = reorder(Type, Calories), y = Calories)) +
 ```
 
 #### Correlation Plot
-```{r echo = F}
+```{r echo = TRUE}
 cr <- cor(cleaned_sbux[, 2:6])
 corrplot(cr, method = 'color')
 rm('cr')
 ```
 
 #### Calories Vs Total Fat Scatter Plot
-```{r echo = F}
+```{r echo = TRUE}
 plot(cleaned_sbux$Total_Fat, cleaned_sbux$Calories, main = "Scatter Plot", xlab = "Total Fat", ylab = "Calories")
 abline(lm(cleaned_sbux$Calories ~ cleaned_sbux$Total_Fat))
 ```
 
 #### Colries vs Protein Density Map
-```{r echo = F}
+```{r echo = TRUE}
 options(repr.plot.height = 4, repr.plot.width = 6)
 ggplot(cleaned_sbux, aes(y = Calories, x = Protein)) +
   geom_jitter(size = 1) +
@@ -366,7 +366,7 @@ ggplot(cleaned_sbux, aes(y = Calories, x = Protein)) +
 ```
 
 #### Colries vs Calories from Fat Density Map
-```{r echo = F}
+```{r echo = TRUE}
 options(repr.plot.height = 4, repr.plot.width = 6)
 ggplot(cleaned_sbux, aes(y = Calories, x = Carbohydrates)) +
   geom_jitter(size = 1) +
@@ -377,7 +377,7 @@ ggplot(cleaned_sbux, aes(y = Calories, x = Carbohydrates)) +
 ```
 
 #### Colries vs Calories from Fat Density Map
-```{r echo = F}
+```{r echo = TRUE}
 options(repr.plot.height = 4, repr.plot.width = 6)
 ggplot(cleaned_sbux, aes(y = Calories, x = Total_Fat)) +
   geom_jitter(size = 1) +
@@ -402,12 +402,12 @@ summary(sbux_lm_model)
 ```
 
 #### Plots to explain the model
-```{r echo = F}
+```{r echo = TRUE}
 plot(sbux_lm_model, which = 1:4)
 ```
 
 #### Predictions vs Actual
-```{r echo = F}
+```{r echo = TRUE}
 predictions <- predict(sbux_lm_model, test)
 plot(test$Calories, type = "l", lty = 1.8, col = "blue")
 lines(predictions, type = "l", col = "red")
@@ -440,7 +440,7 @@ rm('predictions', 'real', 'conf_data', 'split', 'test', 'train')
 
 ## Joined Data:
 #### Calories Histogram
-```{r echo = F}
+```{r echo = TRUE}
 options(repr.plot.height = 3, repr.plot.width = 6)
 ggplot(joined_data, aes(x = Calories)) +
   geom_histogram(aes(y = ..density..), fill = "lightblue", binwidth = 40, color = "darkgray") + 
@@ -449,7 +449,7 @@ ggplot(joined_data, aes(x = Calories)) +
 ```
 
 #### Calories BoxPlot
-```{r echo = F}
+```{r echo = TRUE}
 options(repr.plot.height = 3, repr.plot.width = 6)
 ggplot(joined_data, aes(x = reorder(Brand, Calories), y = Calories)) +
   geom_boxplot() +
@@ -458,20 +458,20 @@ ggplot(joined_data, aes(x = reorder(Brand, Calories), y = Calories)) +
 ```
 
 #### Correlation Plot
-```{r echo = F}
+```{r echo = TRUE}
 cr <- cor(joined_data[, 2:6])
 corrplot(cr, method = 'color')
 rm('cr')
 ```
 
 #### Calories Vs Total Fat Scatter Plot
-```{r echo = F}
+```{r echo = TRUE}
 plot(joined_data$Total_Fat, joined_data$Calories, main = "Scatter Plot", xlab = "Total Fat", ylab = "Calories")
 abline(lm(joined_data$Calories ~ joined_data$Total_Fat))
 ```
 
 #### Colries vs Protein Density Map
-```{r echo = F}
+```{r echo = TRUE}
 options(repr.plot.height = 4, repr.plot.width = 6)
 ggplot(joined_data, aes(y = Calories, x = Protein)) +
   geom_jitter(size = 1) +
@@ -482,7 +482,7 @@ ggplot(joined_data, aes(y = Calories, x = Protein)) +
 ```
 
 #### Colries vs Calories from Fat Density Map
-```{r echo = F}
+```{r echo = TRUE}
 options(repr.plot.height = 4, repr.plot.width = 6)
 ggplot(joined_data, aes(y = Calories, x = Carbohydrates)) +
   geom_jitter(size = 1) +
@@ -493,7 +493,7 @@ ggplot(joined_data, aes(y = Calories, x = Carbohydrates)) +
 ```
 
 #### Colries vs Calories from Fat Density Map
-```{r echo = F}
+```{r echo = TRUE}
 options(repr.plot.height = 4, repr.plot.width = 6)
 ggplot(joined_data, aes(y = Calories, x = Total_Fat)) +
   geom_jitter(size = 1) +
@@ -518,12 +518,12 @@ summary(lm_model)
 ```
 
 #### Plots to explain the model
-```{r echo = F}
+```{r echo = TRUE}
 plot(lm_model, which = 1:4)
 ```
 
 #### Predictions vs Actual
-```{r echo = F}
+```{r echo = TRUE}
 predictions <- predict(lm_model, test)
 plot(test$Calories, type = "l", lty = 1.8, col = "blue")
 lines(predictions, type = "l", col = "red")
@@ -585,8 +585,8 @@ sbux_f %>%
   ungroup() %>% 
   arrange(desc(n))
 
-# Green Goddess Avocado Salad			
-# Lentils & Vegetable Protein Bowl with Brown Rice		
+# Green Goddess Avocado Salad     
+# Lentils & Vegetable Protein Bowl with Brown Rice    
 # Roasted Turkey & Dill Havarti Sandwich
 ```
 
@@ -659,8 +659,8 @@ sudo_sugar <- sudo %>%
 length(sudo_sugar[, 1]) / length(drinks_expanded$Beverage_category)
 
 # Worst drinks ordered by violation of sugar contents
-# Frappuccino Blended Coffee				
-# Signature Espresso Drinks				
+# Frappuccino Blended Coffee        
+# Signature Espresso Drinks       
 # Tazo Tea Drinks  
 ```
 
@@ -695,7 +695,7 @@ drinks_expanded %>%
 ```
 
 ###Food dataset
-```{r fig.width = 14, fig.height = 4, warning = FALSE, message = FALSE, echo = FALSE}
+```{r fig.width = 14, fig.height = 4, warning = FALSE, message = FALSE, echo = TRUEALSE}
 sbux_f %>% 
     select(-contains('Item')) %>%
     select(-contains('Type')) %>% 
