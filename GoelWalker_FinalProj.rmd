@@ -7,11 +7,14 @@ output: html_notebook
 ---
 
 # Front matter
+The front matter cleans up the R environment of any old data and values.
+Further we load all required packages to be able to run the code efficiently.
+Lastly we set a Random seed value for reproducibility puposes.
 ```{r}
-# always clean up R environment
+# Cleaning up the R environment
 rm(list = ls())
 
-# load all packages here
+# Loading all the required packages
 library (dplyr)
 library (tidyr)
 library (ggplot2)
@@ -29,12 +32,15 @@ library (rpart.plot)
 library (mdsr)
 library (reshape2)
 
-# Setting a random seed
+# Setting a random seed, for code reproducibility 
 set.seed(380)
 ```
 
+#### User Defined Function:
+The function 'replace_drop_na' replaces all the dashes(i.e. '-') with NA.
+Further drops any records with a NA value.
+This function was used on all datasets for data cleaning purposes.
 ```{r echo = TRUE}
-# User Defined Function:
 replace_drop_na <- function(arg_1) {
    arg_1[arg_1 == '-'] <- NA
    print(paste0("Pre-Cleaning Records: ", nrow(arg_1)))
@@ -48,7 +54,6 @@ replace_drop_na <- function(arg_1) {
 }
 ```
 
-
 # Loading and Cleaning the Datasets
 ### McDonalds Dataset
 ```{r}
@@ -56,11 +61,11 @@ mcd <- read.csv(file = "nutrition_facts_mcdonalds_menu.csv",
                 header = TRUE, sep = ",")
 mcd <- replace_drop_na(mcd)
 
-# Subsetting drinks from the menu
+# Creating drink subset data
 drinks.oz <- mcd[str_detect(mcd$Serving.Size, " fl oz.*"), ]
 drinks.ml <- mcd[str_detect(mcd$Serving.Size, 'carton'), ]
 
-# Converting ounces to mililiters and further rounding the values
+# Converting ounces to mililiters
 drinks.oz$Serving.Size <- 
   round(as.numeric(gsub(" fl oz.*", "", drinks.oz$Serving.Size)) * 29.5735, 0)
 drinks.ml$Serving.Size <- 
@@ -71,24 +76,31 @@ food.g <- mcd[str_detect(mcd$Serving.Size, 'g'), ]
 food.g$Serving.Size <- 
   round(as.numeric(gsub(".*\\((.*)\\ g).*", "\\1", food.g$Serving.Size)), 0)
 
-# Combining drinks and food menu
-# While adding a new feature for drink or food
+# Combining the drinks and food data
+# Adding a feature to determine the type
 cleaned_mcd <- rbind(drinks.oz, drinks.ml)
 cleaned_mcd$Type <- rep("Drinks", nrow(cleaned_mcd))
 food.g$Type <- rep("Food", nrow(food.g))
 cleaned_mcd <- rbind(cleaned_mcd, food.g)
 
+# Subsetting the dataset for analysis and joining purposes
 keeps <- c("Item", "Calories", "Total.Fat", "Carbohydrates", "Dietary.Fiber", 
            "Protein", "Type")
 cleaned_mcd <- cleaned_mcd[keeps]
 colnames(cleaned_mcd)[colnames(cleaned_mcd)=="Total.Fat"] <- "Total_Fat"
 colnames(cleaned_mcd)[colnames(cleaned_mcd)=="Dietary.Fiber"] <- "Fiber"
 
-cleaned_mcd$Calories <- as.numeric(as.character(cleaned_mcd$Calories))
-cleaned_mcd$Total_Fat <- as.numeric(as.character(cleaned_mcd$Total_Fat))
-cleaned_mcd$Carbohydrates <- as.numeric(as.character(cleaned_mcd$Carbohydrates))
-cleaned_mcd$Fiber <- as.numeric(as.character(cleaned_mcd$Fiber))
-cleaned_mcd$Protein <- as.numeric(as.character(cleaned_mcd$Protein))
+# Converting character values into numeric values.
+cleaned_mcd$Calories <- 
+  as.numeric(as.character(cleaned_mcd$Calories))
+cleaned_mcd$Total_Fat <- 
+  as.numeric(as.character(cleaned_mcd$Total_Fat))
+cleaned_mcd$Carbohydrates <- 
+  as.numeric(as.character(cleaned_mcd$Carbohydrates))
+cleaned_mcd$Fiber <- 
+  as.numeric(as.character(cleaned_mcd$Fiber))
+cleaned_mcd$Protein <- 
+  as.numeric(as.character(cleaned_mcd$Protein))
 ```
 
 ### Starbucks Dataset
@@ -116,11 +128,13 @@ colnames(sbux_d)[colnames(sbux_d) == "Fat..g."] <- "Total_Fat"
 colnames(sbux_d)[colnames(sbux_d) == "Carb...g."] <- "Carbohydrates"
 colnames(sbux_d)[colnames(sbux_d) == "Fiber..g."] <- "Fiber"
 
-# Adding a new column named Type
+# Combining the drinks and food data
+# Adding a feature to determine the type
 sbux_d$Type <- rep("Drinks", nrow(sbux_d))
 sbux_f$Type <- rep("Food", nrow(sbux_f))
 cleaned_sbux <- rbind(sbux_f, sbux_d)
 
+# Converting character values into numeric values.
 cleaned_sbux$Calories <- 
   as.numeric(as.character(cleaned_sbux$Calories))
 cleaned_sbux$Total_Fat <- 
@@ -138,7 +152,7 @@ cleaned_sbux$Protein <-
 drinks_expanded <- read.csv('starbucks_drink_menu_expanded.csv', 
                             header = TRUE, sep = ",")
 
-# as the data seems to contains some trademarks and accent, we will first remove them
+# The data contains trademarks and accent which are removed here
 drinks_expanded$Beverage_category <- iconv(drinks_expanded$Beverage_category, 
                                            "latin1", "ASCII", sub = "byte")
 drinks_expanded$Beverage <- iconv(drinks_expanded$Beverage, "latin1", 
@@ -153,6 +167,7 @@ drinks_expanded$Beverage <-
 drinks_expanded$Beverage_prep <- 
   gsub('(<[a-z0-9]+>)', '', drinks_expanded$Beverage_prep)
 
+# Column names changed to conform to the earlier datasets
 colnames(drinks_expanded)[colnames(drinks_expanded) == "Total.Fat..g."] <- 
   "Total_Fat"
 colnames(drinks_expanded)[colnames(drinks_expanded) == "Trans.Fat..g."] <- 
@@ -182,6 +197,8 @@ colnames(drinks_expanded)[colnames(drinks_expanded) == "Iron....DV."] <-
 colnames(drinks_expanded)[colnames(drinks_expanded) == "Caffeine..mg."] <- 
   "Caffeine"
 
+# Using Regular Expressiosn to remove % signs from the values.
+# Converting character values into numeric values.
 drinks_expanded$Vitamin_A <- 
   gsub( "%", "", as.character(drinks_expanded$Vitamin_A))
 drinks_expanded$Vitamin_A <- 
@@ -671,7 +688,7 @@ sbux_f %>%
 plot(Calories~Total_Fat, 
      ylab = 'Calories in Starbucks Drinks', 
      xlab = 'Total Fat in Starbucks Food',
-     main = 'Caleries vs Total Fat for Starbucks Drinks', 
+     main = 'Calories vs Total Fat for Starbucks Drinks', 
      data = drinks_expanded)
 abline(h = 500, col = 'red')
 ```
@@ -843,6 +860,7 @@ plot(hc, hang = -1, cex = 1.4, xlab = "", sub="",
 ```
 
 ### Simulation
+Simulation using sampling with replacement, bootstrap, simulates 365 days for eating 3 meals and drinking 3 drinks a day, examines total sugar, caleries, fat, carbohydrates, and caffine. Histograms show distribution of nutrion facts per day where the red line is the recomendation by the Federal Goverment, citation is first line.
 ```{r}
 starbucks_order <- function(food_size = 1, drink_size = 1){
   food_samp <- sample(sbux_f, food_size, replace = TRUE)
@@ -896,4 +914,15 @@ hist(final_sim[, 5],
      xlab = 'Graph of Simulated Daily Caffeine Intake at Starbucks',
      main = 'Daily Caffeine Amount (mg)')
 abline(v = 400, col = 'red')
+
+cat('Sugar\n')
+mean(final_sim[,1])
+cat('Calories\n')
+mean(final_sim[,2])
+cat('Fat\n')
+mean(final_sim[,3])
+cat('Carbohydrates\n')
+mean(final_sim[,4])
+cat('Caffine\n')
+mean(final_sim[,5])
 ```
