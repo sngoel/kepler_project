@@ -350,10 +350,15 @@ hist (final_sim[,5],
      main = 'Daily Caffine Amount (mg)')
 abline (v=400, col='red')
 
+cat('Sugar\n')
 mean(final_sim[,1])
+cat('Calories\n')
 mean(final_sim[,2])
+cat('Fat\n')
 mean(final_sim[,3])
+cat('Carbohydrates\n')
 mean(final_sim[,4])
+cat('Caffine\n')
 mean(final_sim[,5])
 
 ```
