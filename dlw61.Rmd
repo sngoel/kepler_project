@@ -22,6 +22,8 @@ library (reshape2) # reshaping
 
 ```
 
+### Clean and Load Data
+Reads in data, turns drink name into ascii to remove tradmark value in drink data set. The beverage name, Bevarge size, and how the beverage was made, was then transformed into digits and letters using regualr expressions
 ```{r}
 # read data https://www.kaggle.com/starbucks/starbucks-menu
 drinks_expanded <- read.csv('starbucks_drinkMenu_expanded.csv')
@@ -38,12 +40,14 @@ drinks_expanded$Beverage_prep <- gsub ('(<[a-z0-9]+>)','',drinks_expanded$Bevera
 ```
 
 ### Quick view of Data
+First six instances in each dataset
 ```{r}
 head (food)
 head (drinks_expanded)
 ```
 
 ### Plot Strar Bucks Food (Calories and Fat)
+Graph of fat versus calories of a starbucks food item, blue line daily recomendation of fat by Universisty of Colorado Colorado Springs, citation below, red line in graph is recomendation of calories citation below
 ```{r}
 # red line shows recomended meal amount of Calories for food
 # blue line shows MAX recomended daily amount of Fat for Food
@@ -83,7 +87,8 @@ Roasted Turkey & Dill Havarti Sandwich
 }
 ```
 
-### Plot Strar Bucks Drink (Calories and Total Fat)
+### Plot Starbucks Drink (Calories and Total Fat)
+Calories vs Total Fat red line is amount of calories recomended by cleavland clinic, citation below 
 ```{r}
 # red line shows recomended meal amount of Calories for food
 
@@ -93,12 +98,13 @@ Roasted Turkey & Dill Havarti Sandwich
 plot (Calories~Total_Fat, 
      ylab = 'Calories in Starbucks Drinks', 
      xlab = 'Total Fat in Starbucks Food',
-     main = 'Caleries vs Total Fat for Starbucks Drinks', 
+     main = 'Calories vs Total Fat for Starbucks Drinks', 
      data = drinks_expanded)
 abline (h = 500, col = 'red')
 ```
 
 ### Plot Strar Bucks Drink (Sugars and Total Fat)
+Graph of Fat and Sugar Content in Starbucks drinks red line in graph is max standard set by University of California Sanfrancisco for daily amount of sugar Citation below
 ```{r}
 # red line shows MAX recomended meal amount of sugar for food
 
@@ -113,6 +119,8 @@ abline (h = 38, col = 'red')
 ```
 
 ### Plot Strar Bucks Drink (Sugars and Caffine)
+Clean Caffeine variable in Starbucks Drink variable, creates scatter plot of Caffine and sugar, red line shows the 
+Federal Goverments standard for Caffine intake, Citation below, Finds Drinks whith highest sugar content, and expected value for number of drinks that violate standards set by University of California San Francisco, Citation above
 ```{r, warning=FALSE, message=FALSE}
 # Blue line Max recomendation of sugar
 # Red line Max recomendation of caffine
@@ -172,7 +180,7 @@ drinks_expanded$Caffeine <- as.numeric (as.character (drinks_expanded$Caffeine))
 ```
 
 #### Distribution of the variables in each of the datasets
-Drinks expanded dataset
+Drinks expanded dataset, shown by histogram of each feature 
 ```{r ggplot, fig.width=14, fig.height=8, warning=FALSE, message=FALSE, echo=FALSE}
 drinks_expanded %>% 
     select (-contains ("Beverage")) %>% 
@@ -198,6 +206,7 @@ drinks_expanded %>%
 ```
 
 ###Food dataset
+Histogram of each feature in the Starbucks Food data set 
 ```{r fig.width=14, fig.height=4, warning=FALSE, message=FALSE, echo=FALSE}
 food %>% 
     select (-contains("Food")) %>% 
@@ -283,6 +292,7 @@ plot (hc,
 ```
 
 ### Simulation
+Simulation using sampling with replacement, bootstrap, simulates 365 days for eating 3 meals and drinking 3 drinks a day, examines total sugar, caleries, fat, carbohydrates, and caffine. Histograms show distribution of nutrion facts per day where the red line is the recomendation by the Federal Goverment, citation is first line.
 ```{r}
 # https://www.accessdata.fda.gov/scripts/interactivenutritionfactslabel/carbohydrate.html
 
@@ -339,6 +349,12 @@ hist (final_sim[,5],
      xlab = 'Graph of Simulated Daily Caffine Intake at Starbucks',
      main = 'Daily Caffine Amount (mg)')
 abline (v=400, col='red')
+
+mean(final_sim[,1])
+mean(final_sim[,2])
+mean(final_sim[,3])
+mean(final_sim[,4])
+mean(final_sim[,5])
 
 ```
 
