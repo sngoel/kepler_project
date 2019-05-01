@@ -52,7 +52,8 @@ replace_drop_na <- function(arg_1) {
 # Loading and Cleaning the Datasets
 ### McDonalds Dataset
 ```{r}
-mcd <- read.csv(file = "nutrition_facts_mcdonalds_menu.csv", header = TRUE, sep = ",")
+mcd <- read.csv(file = "nutrition_facts_mcdonalds_menu.csv", 
+                header = TRUE, sep = ",")
 mcd <- replace_drop_na(mcd)
 
 # Subsetting drinks from the menu
@@ -77,7 +78,8 @@ cleaned_mcd$Type <- rep("Drinks", nrow(cleaned_mcd))
 food.g$Type <- rep("Food", nrow(food.g))
 cleaned_mcd <- rbind(cleaned_mcd, food.g)
 
-keeps <- c("Item", "Calories", "Total.Fat", "Carbohydrates", "Dietary.Fiber", "Protein", "Type")
+keeps <- c("Item", "Calories", "Total.Fat", "Carbohydrates", "Dietary.Fiber", 
+           "Protein", "Type")
 cleaned_mcd <- cleaned_mcd[keeps]
 colnames(cleaned_mcd)[colnames(cleaned_mcd)=="Total.Fat"] <- "Total_Fat"
 colnames(cleaned_mcd)[colnames(cleaned_mcd)=="Dietary.Fiber"] <- "Fiber"
@@ -92,7 +94,8 @@ cleaned_mcd$Protein <- as.numeric(as.character(cleaned_mcd$Protein))
 ### Starbucks Dataset
 ```{r}
 # Food Dataset
-sbux_f <- read.csv(file = "nutrition_facts_starbucks_food_menu.csv", header = TRUE, sep = ",")
+sbux_f <- read.csv(file = "nutrition_facts_starbucks_food_menu.csv", 
+                   header = TRUE, sep = ",")
 sbux_f <- replace_drop_na(sbux_f)
 
 colnames(sbux_f)[colnames(sbux_f) == "ï..Food.Name"] <- "Item"
@@ -102,7 +105,8 @@ colnames(sbux_f)[colnames(sbux_f) == "Fiber..g."] <- "Fiber"
 colnames(sbux_f)[colnames(sbux_f) == "Protein..g."] <- "Protein"
 
 # Drink Dataset
-sbux_d <- read.csv(file = "nutrition_facts_starbucks_drink_menu.csv", header = TRUE, sep = ",")
+sbux_d <- read.csv(file = "nutrition_facts_starbucks_drink_menu.csv", 
+                   header = TRUE, sep = ",")
 sbux_d <- replace_drop_na(sbux_d)
 
 sbux_d <- sbux_d %>%
@@ -117,59 +121,98 @@ sbux_d$Type <- rep("Drinks", nrow(sbux_d))
 sbux_f$Type <- rep("Food", nrow(sbux_f))
 cleaned_sbux <- rbind(sbux_f, sbux_d)
 
-cleaned_sbux$Calories <- as.numeric(as.character(cleaned_sbux$Calories))
-cleaned_sbux$Total_Fat <- as.numeric(as.character(cleaned_sbux$Total_Fat))
-cleaned_sbux$Carbohydrates <- as.numeric(as.character(cleaned_sbux$Carbohydrates))
-cleaned_sbux$Fiber <- as.numeric(as.character(cleaned_sbux$Fiber))
-cleaned_sbux$Protein <- as.numeric(as.character(cleaned_sbux$Protein))
+cleaned_sbux$Calories <- 
+  as.numeric(as.character(cleaned_sbux$Calories))
+cleaned_sbux$Total_Fat <- 
+  as.numeric(as.character(cleaned_sbux$Total_Fat))
+cleaned_sbux$Carbohydrates <- 
+  as.numeric(as.character(cleaned_sbux$Carbohydrates))
+cleaned_sbux$Fiber <- 
+  as.numeric(as.character(cleaned_sbux$Fiber))
+cleaned_sbux$Protein <- 
+  as.numeric(as.character(cleaned_sbux$Protein))
 ```
 
 ### Starbucks Drinks Expanded Dataset
 ```{r}
-drinks_expanded <- read.csv('starbucks_drink_menu_expanded.csv', header = TRUE, sep = ",")
+drinks_expanded <- read.csv('starbucks_drink_menu_expanded.csv', 
+                            header = TRUE, sep = ",")
 
 # as the data seems to contains some trademarks and accent, we will first remove them
-drinks_expanded$Beverage_category <- iconv(drinks_expanded$Beverage_category, "latin1", "ASCII", sub = "byte")
-drinks_expanded$Beverage <- iconv(drinks_expanded$Beverage, "latin1", "ASCII", sub = "byte")
-drinks_expanded$Beverage_prep <- iconv(drinks_expanded$Beverage_prep, "latin1", "ASCII", sub = "byte")
+drinks_expanded$Beverage_category <- iconv(drinks_expanded$Beverage_category, 
+                                           "latin1", "ASCII", sub = "byte")
+drinks_expanded$Beverage <- iconv(drinks_expanded$Beverage, "latin1", 
+                                  "ASCII", sub = "byte")
+drinks_expanded$Beverage_prep <- iconv(drinks_expanded$Beverage_prep, "latin1", 
+                                       "ASCII", sub = "byte")
 
-drinks_expanded$Beverage_category <- gsub('(<[a-z0-9]+>)', '', drinks_expanded$Beverage_category)
-drinks_expanded$Beverage <- gsub('(<[a-z0-9]+>)', '', drinks_expanded$Beverage)
-drinks_expanded$Beverage_prep <- gsub('(<[a-z0-9]+>)', '', drinks_expanded$Beverage_prep)
+drinks_expanded$Beverage_category <- 
+  gsub('(<[a-z0-9]+>)', '', drinks_expanded$Beverage_category)
+drinks_expanded$Beverage <- 
+  gsub('(<[a-z0-9]+>)', '', drinks_expanded$Beverage)
+drinks_expanded$Beverage_prep <- 
+  gsub('(<[a-z0-9]+>)', '', drinks_expanded$Beverage_prep)
 
-colnames(drinks_expanded)[colnames(drinks_expanded) =="Total.Fat..g."] <- "Total_Fat"
-colnames(drinks_expanded)[colnames(drinks_expanded) =="Trans.Fat..g."] <- "Trasn_Fat"
-colnames(drinks_expanded)[colnames(drinks_expanded) =="Saturated.Fat..g."] <- "Saturated_Fat"
-colnames(drinks_expanded)[colnames(drinks_expanded) =="Sodium..mg."] <- "Sodium"
-colnames(drinks_expanded)[colnames(drinks_expanded) =="Total.Carbohydrates..g."] <- "Total_Carbohydrates"
-colnames(drinks_expanded)[colnames(drinks_expanded) =="Cholesterol..mg."] <- "Cholesterol"
-colnames(drinks_expanded)[colnames(drinks_expanded) =="Dietary.Fibre..g."] <- "Dietary_Fibre"
-colnames(drinks_expanded)[colnames(drinks_expanded) =="Sugars..g."] <- "Sugars"
-colnames(drinks_expanded)[colnames(drinks_expanded) =="Protein..g."] <- "Protein"
-colnames(drinks_expanded)[colnames(drinks_expanded) =="Vitamin.A....DV."] <- "Vitamin_A"
-colnames(drinks_expanded)[colnames(drinks_expanded) =="Vitamin.C....DV."] <- "Vitamin_C"
-colnames(drinks_expanded)[colnames(drinks_expanded) =="Calcium....DV."] <- "Calcium"
-colnames(drinks_expanded)[colnames(drinks_expanded) =="Iron....DV."] <- "Iron"
-colnames(drinks_expanded)[colnames(drinks_expanded) == "Caffeine..mg."] <- "Caffeine"
+colnames(drinks_expanded)[colnames(drinks_expanded) == "Total.Fat..g."] <- 
+  "Total_Fat"
+colnames(drinks_expanded)[colnames(drinks_expanded) == "Trans.Fat..g."] <- 
+  "Trasn_Fat"
+colnames(drinks_expanded)[colnames(drinks_expanded) == "Saturated.Fat..g."] <- 
+  "Saturated_Fat"
+colnames(drinks_expanded)[colnames(drinks_expanded) == "Sodium..mg."] <- 
+  "Sodium"
+colnames(drinks_expanded)[colnames(drinks_expanded) == "Total.Carbohydrates..g."] <- 
+  "Total_Carbohydrates"
+colnames(drinks_expanded)[colnames(drinks_expanded) == "Cholesterol..mg."] <- 
+  "Cholesterol"
+colnames(drinks_expanded)[colnames(drinks_expanded) == "Dietary.Fibre..g."] <- 
+  "Dietary_Fibre"
+colnames(drinks_expanded)[colnames(drinks_expanded) == "Sugars..g."] <- 
+  "Sugars"
+colnames(drinks_expanded)[colnames(drinks_expanded) == "Protein..g."] <- 
+  "Protein"
+colnames(drinks_expanded)[colnames(drinks_expanded) == "Vitamin.A....DV."] <- 
+  "Vitamin_A"
+colnames(drinks_expanded)[colnames(drinks_expanded) == "Vitamin.C....DV."] <- 
+  "Vitamin_C"
+colnames(drinks_expanded)[colnames(drinks_expanded) == "Calcium....DV."] <- 
+  "Calcium"
+colnames(drinks_expanded)[colnames(drinks_expanded) == "Iron....DV."] <- 
+  "Iron"
+colnames(drinks_expanded)[colnames(drinks_expanded) == "Caffeine..mg."] <- 
+  "Caffeine"
 
-drinks_expanded$Vitamin_A <- gsub( "%", "", as.character(drinks_expanded$Vitamin_A))
-drinks_expanded$Vitamin_A <- as.numeric(as.character(drinks_expanded$Vitamin_A))
+drinks_expanded$Vitamin_A <- 
+  gsub( "%", "", as.character(drinks_expanded$Vitamin_A))
+drinks_expanded$Vitamin_A <- 
+  as.numeric(as.character(drinks_expanded$Vitamin_A))
 
-drinks_expanded$Vitamin_C <- gsub( "%", "", as.character(drinks_expanded$Vitamin_C))
-drinks_expanded$Vitamin_C <- as.numeric(as.character(drinks_expanded$Vitamin_C))
+drinks_expanded$Vitamin_C <- 
+  gsub( "%", "", as.character(drinks_expanded$Vitamin_C))
+drinks_expanded$Vitamin_C <- 
+  as.numeric(as.character(drinks_expanded$Vitamin_C))
 
-drinks_expanded$Calcium <- gsub( "%", "", as.character(drinks_expanded$Calcium))
-drinks_expanded$Calcium <- as.numeric(as.character(drinks_expanded$Calcium))
+drinks_expanded$Calcium <- 
+  gsub( "%", "", as.character(drinks_expanded$Calcium))
+drinks_expanded$Calcium <- 
+  as.numeric(as.character(drinks_expanded$Calcium))
 
-drinks_expanded$Iron <- gsub( "%", "", as.character(drinks_expanded$Iron))
-drinks_expanded$Iron <- as.numeric(as.character(drinks_expanded$Iron))
+drinks_expanded$Iron <- 
+  gsub( "%", "", as.character(drinks_expanded$Iron))
+drinks_expanded$Iron <- 
+  as.numeric(as.character(drinks_expanded$Iron))
 
-drinks_expanded$Caffeine <- gsub( "Varies", "", as.character(drinks_expanded$Caffeine))
-drinks_expanded$Caffeine <- gsub( "varies", "", as.character(drinks_expanded$Caffeine))
-drinks_expanded$Caffeine <- as.numeric(as.character(drinks_expanded$Caffeine))
-drinks_expanded$Total_Fat <- as.numeric(as.character(drinks_expanded$Total_Fat))
+drinks_expanded$Caffeine <- 
+  gsub( "Varies", "", as.character(drinks_expanded$Caffeine))
+drinks_expanded$Caffeine <- 
+  gsub( "varies", "", as.character(drinks_expanded$Caffeine))
+drinks_expanded$Caffeine <- 
+  as.numeric(as.character(drinks_expanded$Caffeine))
+drinks_expanded$Total_Fat <- 
+  as.numeric(as.character(drinks_expanded$Total_Fat))
 
-drinks_expanded <- replace_drop_na(drinks_expanded)
+drinks_expanded <- 
+  replace_drop_na(drinks_expanded)
 ```
 
 ### Joining the Mcdonalds and Starbucks Dataset
@@ -211,8 +254,10 @@ rm('mcd', 'sbux_d', 'keeps', 'drinks.ml', 'drinks.oz', 'food.g')
 ```{r echo = TRUE}
 options(repr.plot.height = 3, repr.plot.width = 6)
 ggplot(cleaned_mcd, aes(x = Calories)) +
-  geom_histogram(aes(y = ..density..), fill = "lightblue", binwidth = 40, color = "darkgray") + 
-  scale_x_continuous(breaks = seq(min(cleaned_mcd$Calories), max(cleaned_mcd$Calories), by = 200)) + 
+  geom_histogram(aes(y = ..density..), 
+                 fill = "lightblue", binwidth = 40, color = "darkgray") + 
+  scale_x_continuous(breaks = seq(min(cleaned_mcd$Calories), 
+                                  max(cleaned_mcd$Calories), by = 200)) + 
   geom_density()
 ```
 
@@ -234,7 +279,8 @@ rm('cr')
 
 #### Calories Vs Total Fat Scatter Plot
 ```{r echo = TRUE}
-plot(cleaned_mcd$Total_Fat, cleaned_mcd$Calories, main = "Scatter Plot", xlab = "Total Fat", ylab = "Calories")
+plot(cleaned_mcd$Total_Fat, cleaned_mcd$Calories, 
+     main = "Scatter Plot", xlab = "Total Fat", ylab = "Calories")
 abline(lm(cleaned_mcd$Calories ~ cleaned_mcd$Total_Fat))
 ```
 
@@ -281,7 +327,8 @@ test <- subset(cleaned_mcd, split == "FALSE")
 
 #### Linear Regression Model
 ```{r}
-mcd_lm_model <- lm(Calories ~ Total_Fat + Protein + Carbohydrates, data = train)
+mcd_lm_model <- 
+  lm(Calories ~ Total_Fat + Protein + Carbohydrates, data = train)
 summary(mcd_lm_model)
 ```
 
@@ -299,22 +346,29 @@ lines(predictions, type = "l", col = "red")
 
 #### Future Predictions
 ```{r}
-predict(mcd_lm_model, data.frame(Total_Fat = 20, Protein = 18, Carbohydrates = 33))
+predict(mcd_lm_model, data.frame(Total_Fat = 20, 
+                                 Protein = 18, Carbohydrates = 33))
 ```
 
 #### Decision Tree
 ```{r}
-mcd_dt_model <- rpart(Type ~ Calories + Total_Fat + Protein + Carbohydrates, data = train)
+mcd_dt_model <- rpart(Type ~ Calories + Total_Fat + Protein + Carbohydrates, 
+                      data = train)
 prp(mcd_dt_model, type = 1, extra = 3, main = "Decision Tree")
 
-predictions <- data.frame(data = factor(predict(mcd_dt_model, test, type = "class")), type = "prediction")
+predictions <- 
+  data.frame(data = factor(predict(mcd_dt_model, test, type = "class")), 
+             type = "prediction")
 real <- data.frame(data = factor(test$Type), type = "real")
 conf_data <- rbind(predictions, real)
 
 # Check if the levels are identical
-identical(levels(conf_data[conf_data$type == "prediction", 1]), levels(conf_data[conf_data$type == "real", 1]))
+identical(levels(conf_data[conf_data$type == "prediction", 1]), 
+          levels(conf_data[conf_data$type == "real", 1]))
 
-confusionMatrix(conf_data[conf_data$type == "prediction", 1], conf_data[conf_data$type == "real",1], dnn = c("Prediction", "Reference"))
+confusionMatrix(conf_data[conf_data$type == "prediction", 1], 
+                conf_data[conf_data$type == "real",1], 
+                dnn = c("Prediction", "Reference"))
 ```
 
 ```{r}
@@ -327,8 +381,10 @@ rm('predictions', 'real', 'conf_data', 'split', 'test', 'train')
 ```{r echo = TRUE}
 options(repr.plot.height = 3, repr.plot.width = 6)
 ggplot(cleaned_sbux, aes(x = Calories)) +
-  geom_histogram(aes(y = ..density..), fill = "lightblue", binwidth = 40, color = "darkgray") + 
-  scale_x_continuous(breaks = seq(min(cleaned_sbux$Calories), max(cleaned_sbux$Calories), by = 200)) + 
+  geom_histogram(aes(y = ..density..), fill = "lightblue", 
+                 binwidth = 40, color = "darkgray") + 
+  scale_x_continuous(breaks = seq(min(cleaned_sbux$Calories), 
+                                  max(cleaned_sbux$Calories), by = 200)) + 
   geom_density()
 ```
 
@@ -350,7 +406,8 @@ rm('cr')
 
 #### Calories Vs Total Fat Scatter Plot
 ```{r echo = TRUE}
-plot(cleaned_sbux$Total_Fat, cleaned_sbux$Calories, main = "Scatter Plot", xlab = "Total Fat", ylab = "Calories")
+plot(cleaned_sbux$Total_Fat, cleaned_sbux$Calories, 
+     main = "Scatter Plot", xlab = "Total Fat", ylab = "Calories")
 abline(lm(cleaned_sbux$Calories ~ cleaned_sbux$Total_Fat))
 ```
 
@@ -397,7 +454,8 @@ test <- subset(cleaned_sbux, split == "FALSE")
 
 #### Linear Regression Model
 ```{r}
-sbux_lm_model <- lm(Calories ~ Total_Fat + Protein + Carbohydrates, data = train)
+sbux_lm_model <- lm(Calories ~ Total_Fat + Protein + Carbohydrates, 
+                    data = train)
 summary(sbux_lm_model)
 ```
 
@@ -420,17 +478,23 @@ predict(sbux_lm_model, data.frame(Total_Fat = 20, Protein = 18, Carbohydrates = 
 
 #### Decision Tree
 ```{r}
-sbux_dt_model <- rpart(Type ~ Calories + Total_Fat + Protein + Carbohydrates, data = train)
+sbux_dt_model <- rpart(Type ~ Calories + Total_Fat + Protein + Carbohydrates, 
+                       data = train)
 prp(sbux_dt_model, type = 1, extra = 3, main = "Decision Tree")
 
-predictions <- data.frame(data = factor(predict(sbux_dt_model, test, type="class")), type = "prediction")
+predictions <- 
+  data.frame(data = factor(predict(sbux_dt_model, test, type="class")), 
+             type = "prediction")
 real <- data.frame(data = factor(test$Type), type = "real")
 conf_data <- rbind(predictions, real)
 
 # Check if the levels are identical
-identical(levels(conf_data[conf_data$type == "prediction", 1]), levels(conf_data[conf_data$type == "real", 1]))
+identical(levels(conf_data[conf_data$type == "prediction", 1]), 
+          levels(conf_data[conf_data$type == "real", 1]))
 
-confusionMatrix(conf_data[conf_data$type == "prediction", 1], conf_data[conf_data$type == "real",1], dnn = c("Prediction", "Reference"))
+confusionMatrix(conf_data[conf_data$type == "prediction", 1], 
+                conf_data[conf_data$type == "real",1], 
+                dnn = c("Prediction", "Reference"))
 ```
 
 ```{r}
@@ -443,8 +507,10 @@ rm('predictions', 'real', 'conf_data', 'split', 'test', 'train')
 ```{r echo = TRUE}
 options(repr.plot.height = 3, repr.plot.width = 6)
 ggplot(joined_data, aes(x = Calories)) +
-  geom_histogram(aes(y = ..density..), fill = "lightblue", binwidth = 40, color = "darkgray") + 
-  scale_x_continuous(breaks = seq(min(joined_data$Calories), max(joined_data$Calories), by = 200)) + 
+  geom_histogram(aes(y = ..density..), 
+                 fill = "lightblue", binwidth = 40, color = "darkgray") + 
+  scale_x_continuous(breaks = seq(min(joined_data$Calories), 
+                                  max(joined_data$Calories), by = 200)) + 
   geom_density()
 ```
 
@@ -466,7 +532,8 @@ rm('cr')
 
 #### Calories Vs Total Fat Scatter Plot
 ```{r echo = TRUE}
-plot(joined_data$Total_Fat, joined_data$Calories, main = "Scatter Plot", xlab = "Total Fat", ylab = "Calories")
+plot(joined_data$Total_Fat, joined_data$Calories, 
+     main = "Scatter Plot", xlab = "Total Fat", ylab = "Calories")
 abline(lm(joined_data$Calories ~ joined_data$Total_Fat))
 ```
 
@@ -536,17 +603,22 @@ predict(lm_model, data.frame(Total_Fat = 20, Protein = 18, Carbohydrates = 33))
 
 #### Decision Tree
 ```{r}
-dt_model <- rpart(Type ~ Calories + Total_Fat + Protein + Carbohydrates, data = train)
+dt_model <- rpart(Type ~ Calories + Total_Fat + Protein + Carbohydrates, 
+                  data = train)
 prp(dt_model, type = 1, extra = 3, main = "Decision Tree")
 
-predictions <- data.frame(data = factor(predict(dt_model, test, type="class")), type = "prediction")
+predictions <- data.frame(data = factor(predict(dt_model, test, type="class")), 
+                          type = "prediction")
 real <- data.frame(data = factor(test$Type), type = "real")
 conf_data <- rbind(predictions, real)
 
 # Check if the levels are identical
-identical(levels(conf_data[conf_data$type == "prediction", 1]), levels(conf_data[conf_data$type == "real", 1]))
+identical(levels(conf_data[conf_data$type == "prediction", 1]), 
+          levels(conf_data[conf_data$type == "real", 1]))
 
-confusionMatrix(conf_data[conf_data$type == "prediction", 1], conf_data[conf_data$type == "real",1], dnn = c("Prediction", "Reference"))
+confusionMatrix(conf_data[conf_data$type == "prediction", 1], 
+                conf_data[conf_data$type == "real",1], 
+                dnn = c("Prediction", "Reference"))
 ```
 
 ```{r}
@@ -554,18 +626,18 @@ confusionMatrix(conf_data[conf_data$type == "prediction", 1], conf_data[conf_dat
 rm('predictions', 'real', 'conf_data', 'split', 'test', 'train')
 ```
 
-### Plot StarBucks Food (Calories and Fat)
+### Plot Starbucks Food (Calories and Fat)
 ```{r}
 # Red line shows recomended meal amount of Calories for food
 # Blue line shows MAX recomended daily amount of Fat for Food
 
-# https://www.uccs.edu/healthcircle/sites/healthcircle/files/inline-files/Meal%20Planning.pdf
-# https://my.clevelandclinic.org/health/articles/11208-fat-what-you-need-to-know
+
+# http://my.clevelandclinic.org/health/articles/11208-fat-what-you-need-to-know
 
 plot(Calories~Total_Fat, 
      ylab = 'Calories in Starbucks Food', 
-     xlab = 'Fat Food in Starbucks Food',
-     main = 'Caleries vs Fat for Starbucks Food', 
+     xlab = 'Total Fat in Starbucks Food',
+     main = 'Caleries vs Total Fat for Starbucks Food', 
      data = sbux_f)
 abline(v = 22, col = 'blue')
 abline(h = 500, col = 'red')
@@ -590,23 +662,22 @@ sbux_f %>%
 # Roasted Turkey & Dill Havarti Sandwich
 ```
 
-### Plot StarBucks Drink (Calories and Total Fat)
+### Plot Starbucks Drink (Calories and Total Fat)
 ```{r}
 # Red line shows recomended meal amount of Calories for food
 
-# https://www.uccs.edu/healthcircle/sites/healthcircle/files/inline-files/Meal%20Planning.pdf
-# https://my.clevelandclinic.org/health/articles/11208-fat-what-you-need-to-know
+# http://my.clevelandclinic.org/health/articles/11208-fat-what-you-need-to-know
 
 plot(Calories~Total_Fat, 
      ylab = 'Calories in Starbucks Drinks', 
-     xlab = 'Total Food in Starbucks Food',
+     xlab = 'Total Fat in Starbucks Food',
      main = 'Caleries vs Total Fat for Starbucks Drinks', 
      data = drinks_expanded)
 abline(h = 500, col = 'red')
 ```
 
 
-### Plot StarBucks Drink (Sugars and Total Fat)
+### Plot Starbucks Drink (Sugars and Total Fat)
 ```{r}
 # Red line shows MAX recomended meal amount of sugar for food
 
@@ -620,12 +691,11 @@ plot(Sugars~Total_Fat,
 abline(h = 38, col = 'red')
 ```
 
-### Plot StarBucks Drink (Sugars and Caffine)
+### Plot Starbucks Drink (Sugars and Caffine)
 ```{r, warning=FALSE, message=FALSE}
 # Blue line Max recomendation of sugar
 # Red line Max recomendation of caffine
 
-# https://www.fda.gov/consumers/consumer-updates/spilling-beans-how-much-caffeine-too-much
 
 sudo<-drinks_expanded %>%
   mutate(clean_caff=as.numeric(as.character(drinks_expanded$Caffeine)))
@@ -655,7 +725,7 @@ sudo_sugar <- sudo %>%
   select(Beverage_category, Sugars) %>%
   filter(Sugars >= 38) 
 
-# 37.60331% of drinks have higher than rated sugar
+# % of drinks have higher than rated sugar
 length(sudo_sugar[, 1]) / length(drinks_expanded$Beverage_category)
 
 # Worst drinks ordered by violation of sugar contents
@@ -669,8 +739,7 @@ It doesnt seems the data contains any missing values. However, Caffeine variable
 
 #### Distribution of the variables in each of the datasets
 Drinks expanded dataset
-
-```{r ggplot, fig.width=14, fig.height=8, warning=FALSE, message=FALSE, echo=FALSE}
+```{r ggplot, fig.width=14, fig.height=8, warning=FALSE, message=FALSE}
 drinks_expanded %>% 
     select(-contains("Beverage")) %>% 
     mutate(dummy = 1) %>% 
@@ -680,7 +749,8 @@ drinks_expanded %>%
     geom_histogram(color = 'white', fill = 'red') + 
     facet_wrap(~variable, scales = 'free', ncol = 5) + 
     theme_bw() +
-    labs(x = 'Value', y = 'Frequency', title = 'Drinks Expanded Variables Histograms')+
+    labs(x = 'Value', y = 'Frequency', 
+         title = 'Drinks Expanded Variables Histograms')+
     theme(
         legend.text = element_text(size = 11),
         legend.position = "top",
@@ -695,7 +765,7 @@ drinks_expanded %>%
 ```
 
 ###Food dataset
-```{r fig.width = 14, fig.height = 4, warning = FALSE, message = FALSE, echo = TRUEALSE}
+```{r fig.width = 14, fig.height = 4, warning = FALSE, message = FALSE}
 sbux_f %>% 
     select(-contains('Item')) %>%
     select(-contains('Type')) %>% 
@@ -706,7 +776,8 @@ sbux_f %>%
     geom_histogram(color = 'white',fill = 'red') + 
     facet_wrap(~variable, scales = 'free', ncol = 5) + 
     theme_bw() +
-    labs(x = 'Value', y = 'Frequency', title = 'Food Variables Histograms') +
+    labs(x = 'Value', y = 'Frequency', 
+         title = 'Food Variables Histograms') +
     theme(
         legend.text = element_text(size = 11),
         legend.position = "top",
@@ -725,8 +796,10 @@ Fit linear model to predict number of Calories in a drink based on other variabl
 5 folds cross validation Used and will use `MAPE` (mean average error percentage) as the perforamce metrics. Once we have the `MAPE` for each fold, I will simply take the average of all folds and this will be the final `MAPE` 
 ```{r warning = FALSE, message = FALSE}
 # Randomly shuffle the data, set seed to produce the same resultss
-# in addition, remove the first 3 columns which contains the Beverage descriptions
-drinks_expanded <- drinks_expanded[sample(nrow(drinks_expanded)), ] %>% select(-contains("Beverage"))
+# Additionaly remove first 3 columns which contains the Beverage descriptions
+drinks_expanded <- 
+  drinks_expanded[sample(nrow(drinks_expanded)), ] %>% 
+  select(-contains("Beverage"))
 
 # Create 5 equally size folds
 K <- 5
@@ -765,13 +838,12 @@ hc <- hclust(dd, method = "ward.D2")
 # plot the results
 par(cex = 1, mar = c(2, 2, 4, 1))
 plot(hc, hang = -1, cex = 1.4, xlab = "", sub="", 
-     axes=FALSE, ylab = '', main='Food HierarChial Cluster Diagram', cex.main = 2)
+     axes=FALSE, ylab = '', 
+     main='Food Hierarchical Cluster Diagram', cex.main = 2)
 ```
 
 ### Simulation
 ```{r}
-# https://www.accessdata.fda.gov/scripts/interactivenutritionfactslabel/carbohydrate.html
-
 starbucks_order <- function(food_size = 1, drink_size = 1){
   food_samp <- sample(sbux_f, food_size, replace = TRUE)
   drink_samp <- sample(drinks_expanded, drink_size, replace = TRUE)
@@ -786,7 +858,7 @@ starbucks_order <- function(food_size = 1, drink_size = 1){
   # Index 2 Calories
   # Index 3 Fat
   # Index 4 Carbohydrates
-  # Index 5 Caffine
+  # Index 5 Caffeine
   return(c(total_sugar, total_calories, total_fat, total_carbo, total_caffine))
 }
 
@@ -800,7 +872,7 @@ hist(final_sim[, 1],
      breaks = 30,
      xlab = 'Graph of Simulated Daily Sugar Intake at Starbucks',
      main = 'Daily Sugar Amount (g)')
-abline(v = 38,col = 'red')
+abline(v = 38, col = 'red')
 
 hist(final_sim[, 2],
      breaks = 30,
@@ -811,17 +883,17 @@ hist(final_sim[, 3],
      breaks = 30,
      xlab = 'Graph of Simulated Daily Fat Intake at Starbucks',
      main = 'Daily Fat Amount (g)')
-abline(v = 65,col = 'red')
+abline(v = 65, col = 'red')
 
 hist(final_sim[, 4],
      breaks = 30,
      xlab = 'Graph of Simulated Daily Carbohydrates Intake at Starbucks',
      main = 'Daily Carbohydrates Amount (g)')
-abline(v = 300,col = 'red')
+abline(v = 300, col = 'red')
 
 hist(final_sim[, 5],
      breaks = 30,
-     xlab = 'Graph of Simulated Daily Caffine Intake at Starbucks',
-     main = 'Daily Caffine Amount (mg)')
-abline(v = 400,col = 'red')
+     xlab = 'Graph of Simulated Daily Caffeine Intake at Starbucks',
+     main = 'Daily Caffeine Amount (mg)')
+abline(v = 400, col = 'red')
 ```
